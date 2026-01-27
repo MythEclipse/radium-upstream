@@ -4,3 +4,4 @@ pluginManagement {
     }
 }
 rootProject.name = "mixin-config-plugin"
+includeBuild "../caffeine-config-lib"

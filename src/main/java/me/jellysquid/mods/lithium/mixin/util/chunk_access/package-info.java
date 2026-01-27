@@ -3,4 +3,4 @@
 )
 package me.jellysquid.mods.lithium.mixin.util.chunk_access;
 
-import net.caffeinemc.gradle.MixinConfigOption;
+import me.jellysquid.mods.lithium.common.config.caffeine.MixinConfigOption;

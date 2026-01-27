@@ -2,9 +2,9 @@ package me.jellysquid.mods.lithium.common.config;
 
 import me.jellysquid.mods.lithium.common.LithiumMod;
 import me.jellysquid.mods.lithium.common.compat.worldedit.WorldEditCompat;
-import net.caffeinemc.caffeineconfig.AbstractCaffeineConfigMixinPlugin;
-import net.caffeinemc.caffeineconfig.CaffeineConfig;
-import net.caffeinemc.caffeineconfig.Option;
+import me.jellysquid.mods.lithium.common.config.caffeine.AbstractCaffeineConfigMixinPlugin;
+import me.jellysquid.mods.lithium.common.config.caffeine.CaffeineConfig;
+import me.jellysquid.mods.lithium.common.config.caffeine.Option;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.fml.loading.LoadingModList;
 

@@ -2,4 +2,4 @@
         " with those shapes are optimized using a cuboid specific implementation")
 package me.jellysquid.mods.lithium.mixin.shapes.specialized_shapes;
 
-import net.caffeinemc.gradle.MixinConfigOption;
+import me.jellysquid.mods.lithium.common.config.caffeine.MixinConfigOption;

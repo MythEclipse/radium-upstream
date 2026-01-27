@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+} // apply vs plugins block
+
+group = 'net.caffeinemc'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "https://maven.fabricmc.net/" }
+    maven { url "https://repo.spongepowered.org/repository/maven-public/" }
+}
+
+dependencies {
+    implementation 'it.unimi.dsi:fastutil:8.5.9'
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    compileOnly 'org.spongepowered:mixin:0.8.5'
+    implementation 'org.ow2.asm:asm-tree:9.7'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}

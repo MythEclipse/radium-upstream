@@ -3,4 +3,4 @@
 )
 package me.jellysquid.mods.lithium.mixin.world.temperature_cache;
 
-import net.caffeinemc.gradle.MixinConfigOption;
+import me.jellysquid.mods.lithium.common.config.caffeine.MixinConfigOption;

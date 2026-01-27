@@ -1,0 +1,95 @@
+package me.jellysquid.mods.lithium.common.config.caffeine;
+
+import it.unimi.dsi.fastutil.objects.Object2BooleanLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.slf4j.Logger;
+
+/**
+ * A config option that can be enabled or disabled.
+ */
+public final class Option {
+    private final String name;
+
+    private Object2BooleanLinkedOpenHashMap<Option> dependencies;
+    private Set<String> modDefined = null;
+    private boolean enabled;
+    private boolean userDefined;
+
+    Option(String name, boolean enabled, boolean userDefined) {
+        this.name = name;
+        this.enabled = enabled;
+        this.userDefined = userDefined;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public boolean isOverridden() {
+        return this.isUserDefined() || this.isModDefined();
+    }
+
+    public boolean isUserDefined() {
+        return this.userDefined;
+    }
+
+    public boolean isModDefined() {
+        return this.modDefined != null;
+    }
+
+    public Collection<String> getDefiningMods() {
+        return this.modDefined != null ? Collections.unmodifiableCollection(this.modDefined) : Collections.emptyList();
+    }
+
+    void setEnabled(boolean enabled, boolean userDefined) {
+        this.enabled = enabled;
+        this.userDefined = userDefined;
+    }
+
+    public void addModOverride(boolean enabled, String modId) {
+        this.enabled = enabled;
+
+        if (this.modDefined == null) {
+            this.modDefined = new LinkedHashSet<>();
+        }
+
+        this.modDefined.add(modId);
+    }
+
+    void clearModsDefiningValue() {
+        this.modDefined = null;
+    }
+
+    void addDependency(Option dependencyOption, boolean requiredValue) {
+        if (this.dependencies == null) {
+            this.dependencies = new Object2BooleanLinkedOpenHashMap<>(1);
+        }
+        this.dependencies.put(dependencyOption, requiredValue);
+    }
+
+    boolean disableIfDependenciesNotMet(Logger logger) {
+        if (this.dependencies != null && this.isEnabled()) {
+            for (Object2BooleanMap.Entry<Option> dependency : this.dependencies.object2BooleanEntrySet()) {
+                Option option = dependency.getKey();
+                boolean requiredValue = dependency.getBooleanValue();
+                if (option.isEnabled() != requiredValue) {
+                    this.enabled = false;
+                    logger.warn("Option '{}' requires '{}={}' but found '{}'. Setting '{}={}'.", this.name, option.name,
+                            requiredValue, option.isEnabled(), this.name, this.enabled);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}

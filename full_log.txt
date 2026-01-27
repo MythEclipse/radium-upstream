@@ -1,0 +1,196 @@
+Configuration on demand is an incubating feature.
+> Task :mixin-config-plugin:compileJava UP-TO-DATE
+> Task :mixin-config-plugin:pluginDescriptors UP-TO-DATE
+> Task :mixin-config-plugin:processResources UP-TO-DATE
+> Task :mixin-config-plugin:classes UP-TO-DATE
+> Task :mixin-config-plugin:jar UP-TO-DATE
+
+> Configure project :
+Architectury Loom: 1.3.385
+You are using an outdated version of Architectury Loom! This version will not receive any support, please consider updating!
+
+> Task :processApiResources NO-SOURCE
+> Task :compileApiJava UP-TO-DATE
+> Task :apiClasses UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :createMixinConfig UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :generateDLIConfig
+> Task :generateLog4jConfig
+> Task :generateRemapClasspath UP-TO-DATE
+> Task :configureLaunch
+> Task :downloadAssets UP-TO-DATE
+> Task :configureClientLaunch
+
+> Task :runClient
+[17:14:54] [main/INFO] (Launcher) ModLauncher running: args [--launchTarget, forgeclientuserdev, --version, MOD_DEV, --assetIndex, 1.20.1-5, --assetsDir, /home/asephs/.gradle/caches/fabric-loom/assets, --gameDir, ., --fml.forgeVersion, 47.4.3, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, -mixin.config, lithium.mixins.json]
+[17:14:54] [main/INFO] (Launcher) ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.18 by Arch Linux; OS Linux arch amd64 version 6.18.7-arch1-1
+[17:14:55] [main/INFO] (ImmediateWindowHandler) Loading ImmediateWindowProvider fmlearlywindow
+[17:14:55] [main/INFO] (EARLYDISPLAY) Trying GL version 4.6
+[17:14:55] [main/INFO] (EARLYDISPLAY) Requested GL version 4.6 got version 4.6
+[LauncherLogger] Warning: Stream injection failed; legacy loggers may retain blocking behavior.
+[17:14:55] [main/INFO] (CrashAssistantJarInJarHelper) Launching CrashAssistantApp (CrashAssistant-forge-1.19-1.20.1-1.10.28.jar)
+[17:14:55] [pool-2-thread-1/INFO] (EARLYDISPLAY) GL info: NVIDIA GeForce RTX 4050 Laptop GPU/PCIe/SSE2 GL version 4.6.0 NVIDIA 590.48.01, NVIDIA Corporation
+[17:14:55] [main/INFO] (mixin) SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/home/asephs/.gradle/caches/modules-2/files-2.1/dev.architectury/mixin-patched/0.8.5.12/cf1f787f58d3b08b0cb53ecbba7928c09a1893c8/mixin-patched-0.8.5.12.jar%23113!/ Service=ModLauncher Env=CLIENT
+[17:14:55] [main/INFO] (AutoModpack) Prelaunching AutoModpack...
+[17:14:55] [main/INFO] (AutoModpack) Loaded config! took 8ms
+[17:14:55] [main/INFO] (AutoModpack) AutoModpack prelaunched! took 131ms
+[17:14:55] [CrashAssistantApp process logger/INFO] (ChildProcessLogger) CrashAssistantApp process successfully started.
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file AmbientSounds_FORGE_v6.3.1_mc1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file bellsandwhistles-0.4.5-1.20.x-Create6.0+.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file BetterAdvancements-Forge-1.20.1-0.4.2.25.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file blockui-1.20.1-1.0.194.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file chat_heads-0.14.2-forge-1.20.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file citresewn-1.20.1-5.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file CraftTweaker-forge-1.20.1-14.0.59.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file Create Quality of Life-1.20.1-1.6.2.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create-1.20.1-6.0.8.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create-mob-spawners-1.20.1-3.2.0.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create-stuff-additions1.20.1_v2.1.0.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create_connected-1.1.10-mc1.20.1-all.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create_enchantment_industry-1.3.3-for-create-6.0.6.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create_hypertube-0.3.0-FORGE.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create_ltab-3.6.0.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create_netherless-1.20.1-1.3.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create_ore_excavation_plus-0.2.3-1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create_oxidized-0.1.2.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create_rustic_structures-1.0.0-forge-1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create_sky_village-0.0.35 Release-forge-1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create_structures_overhaul-1.4.0.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file create_vibrant_vaults-0.3.2.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file createaddition-1.20.1-1.3.3.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file createbetterfps-1.20.1-1.1.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file createcobblestone-1.4.5+forge-1.20.1-106.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file createcolonies-1.0.0.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file createdeco-2.0.3-1.20.1-forge.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file createdieselgenerators-1.20.1-1.3.8.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file createmechanicalcompanion-1.8-1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file createoreexcavation-1.20-1.6.5.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file CreateSchematicChecker-0.21.12-6.0-forge-1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file createteleporters2.3-1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file CreateTweaker-forge-1.20.1-4.0.15.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file CreativeCore_FORGE_v2.12.32_mc1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file domum_ornamentum-1.20.1-1.0.292-snapshot-universal.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file drippyloadingscreen_forge_3.1.0_MC_1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file embeddium-0.3.31+mc1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file entity_model_features_1.20.1-forge-3.0.10.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file entity_texture_features_1.20.1-forge-7.0.8.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file extra_gauges-2.0.7.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file fancymenu_forge_3.8.1_MC_1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file FpsReducer2-forge-1.20.1-2.5.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file freecam-forge-1.2.1+1.20.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file fusion-1.2.11c-forge-mc1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file journeymap-1.20.1-5.10.3-forge.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file konkrete_forge_1.8.0_MC_1.20-1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file kotlinforforge-4.12.0-all.jar of type LIBRARY with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file melody_forge_1.0.3_MC_1.20.1-1.20.4.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file minecolonies-1.20.1-1.1.1155-snapshot.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file MouseTweaks-forge-mc1.20.1-2.25.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file notenoughanimations-forge-1.11.1-mc1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file ObsidianUI-forge-0.2.3+mc1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file oculus-mc1.20.1-1.8.0.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file ok_zoomer-forge-5.4.0-beta.8.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file rechiseled-1.1.6-forge-mc1.20.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file rechiseledcreate-1.0.2b-forge-mc1.20.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file rubidium-extra-0.5.4.4+mc1.20.1-build.131.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file RyoamicLights-forge-0.2.3+mc1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file sophisticatedbackpacks-1.20.1-3.24.17.1481.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file sophisticatedbackpackscreateintegration-1.20.1-0.1.5.30.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file sophisticatedcore-1.20.1-1.2.116.1346.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file sophisticatedstorage-1.20.1-1.4.18.1413.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file sophisticatedstoragecreateintegration-1.20.1-0.1.15.63.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file structurize-1.20.1-1.0.793-snapshot.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file supermartijn642configlib-1.1.8-forge-mc1.20.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file supermartijn642corelib-1.1.18-forge-mc1.20.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file valkyrien_logistics-1.20.1-forge-1.0.1.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file valkyrienskies-120-2.4.5.jar of type MOD with provider {mods folder locator at /run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/run/mods}
+[17:14:55] [main/WARN] (ModFileParser) Mod file /home/asephs/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.4.3/4080695cecae86c354232f04a2627dd7e4f1149e/javafmllanguage-1.20.1-47.4.3.jar is missing mods.toml file
+[17:14:55] [main/WARN] (ModFileParser) Mod file /home/asephs/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.4.3/29a0368be8b1a5ebc5c52ff7b50cddb265c31c36/lowcodelanguage-1.20.1-47.4.3.jar is missing mods.toml file
+[17:14:55] [main/WARN] (ModFileParser) Mod file /home/asephs/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.4.3/aa997425f691156656d4ba3aa78a50b43d677d91/mclanguage-1.20.1-47.4.3.jar is missing mods.toml file
+[17:14:55] [main/WARN] (ModFileParser) Mod file /home/asephs/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.4.3/4f943542f1f182a4e269b4f920030b50738f6b81/fmlcore-1.20.1-47.4.3.jar is missing mods.toml file
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file javafmllanguage-1.20.1-47.4.3.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@10c2064a
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file lowcodelanguage-1.20.1-47.4.3.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@10c2064a
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file mclanguage-1.20.1-47.4.3.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@10c2064a
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file fmlcore-1.20.1-47.4.3.jar of type LIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@10c2064a
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file forge-1.20.1-47.4.3-minecraft-merged-project-root-1.20.1-net.fabricmc.yarn.1_20_1.1.20.1+build.1-v2-forge-1.20.1-47.4.3.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@10c2064a
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file main of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@10c2064a
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file  of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@10c2064a
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file crash_assistant-forge.jar of type MOD with provider dev.kostromdan.mods.crash_assistant.core_mod.services.CrashAssistantDependencyLocator@2c768ada
+[17:14:55] [main/INFO] (ModDiscoverer) Found mod file automodpack-mod.jar of type MOD with provider pl.skidam.automodpack_loader_core.LazyModLocator@5a00eb1e
+[17:14:56] [main/INFO] (JarInJarDependencyLocator) Found 37 dependencies adding them to mods collection
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file api-1.1.0+3d898dfd55.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file classmate-1.5.1.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file MixinExtras-0.5.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file joml-primitives-1.10.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file mixinextras-forge-0.5.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file json-schema-validator-1.0.71.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file jackson-module-parameter-names-2.14.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file Ponder-Forge-1.20.1-1.0.91.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file Registrate-MC1.20-1.3.3.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file jackson-kotlin-dsl-1.2.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file jackson-core-2.14.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file zjsonpatch-0.4.11.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file jackson-dataformat-cbor-2.14.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file javax.inject-1.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file jackson-annotations-2.14.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file jackson-module-kotlin-2.14.0-rubyfork.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file TRender-1.0.10-1.20.1-forge-SNAPSHOT.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file wrench_wrapper-0.6.2.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file kffmod-4.12.0.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file flywheel-forge-1.20.1-1.0.5.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file commons-collections4-4.3.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file util-1.1.0+3d898dfd55.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file jcpp-1.4.14.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file kfflang-4.12.0.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file architectury-forge-9.1.12.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file jsonschema-module-jackson-4.25.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file itu-1.7.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file jackson-databind-2.14.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file TRansition-1.0.11-1.20.1-forge-SNAPSHOT.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file animated-gif-lib-for-java-animated-gif-lib-1.7.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file kfflib-4.12.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file jsonschema-generator-4.25.0.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file cloth-config-forge-11.1.106.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file dagger-2.43.2.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file commons-math3-3.6.1.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file NanoLiveConfig-1.2.1.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+[17:14:56] [main/INFO] (ModDiscoverer) Found mod file japng-0.5.3.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@3e5d4f6b
+Exception in thread "main" java.lang.module.ResolutionException: Modules radium and NanoLiveConfig export package net.caffeinemc.caffeineconfig to module freecam
+	at java.base/java.lang.module.Resolver.resolveFail(Resolver.java:901)
+	at java.base/java.lang.module.Resolver.failTwoSuppliers(Resolver.java:815)
+	at java.base/java.lang.module.Resolver.checkExportSuppliers(Resolver.java:736)
+	at java.base/java.lang.module.Resolver.finish(Resolver.java:380)
+	at java.base/java.lang.module.Configuration.<init>(Configuration.java:140)
+	at java.base/java.lang.module.Configuration.resolveAndBind(Configuration.java:494)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.ModuleLayerHandler.buildLayer(ModuleLayerHandler.java:75)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.TransformationServicesHandler.buildTransformingClassLoader(TransformationServicesHandler.java:60)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.Launcher.run(Launcher.java:106)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.Launcher.main(Launcher.java:78)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23)
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141)
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86)
+
+> Task :runClient FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':runClient'.
+> Process 'command '/usr/lib/jvm/java-17-openjdk/bin/java'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.2.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 5s
+13 actionable tasks: 3 executed, 10 up-to-date

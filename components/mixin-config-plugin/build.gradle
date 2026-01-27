@@ -8,9 +8,12 @@ group = 'net.caffeinemc'
 
 repositories {
     mavenCentral()
+    maven { url "https://maven.fabricmc.net/" }
+    maven { url "https://repo.spongepowered.org/repository/maven-public/" }
 }
 
 dependencies {
+    implementation 'net.caffeinemc:caffeine-config-lib:1.0-SNAPSHOT'
 }
 
 gradlePlugin {

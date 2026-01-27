@@ -4,4 +4,4 @@
 @MixinConfigOption(description = "Patches that reduce memory allocations")
 package me.jellysquid.mods.lithium.mixin.alloc;
 
-import net.caffeinemc.gradle.MixinConfigOption;
+import me.jellysquid.mods.lithium.common.config.caffeine.MixinConfigOption;

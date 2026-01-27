@@ -14,14 +14,15 @@ plugins {
     id 'org.ajoberstar.grgit' version '5.0.0'
 
     // Mixin config plugin is a subproject for creating lithium's settings from annotations in each mixin package.
-    id 'net.caffeinemc.mixin-config-plugin' version '1.0-SNAPSHOT'
+    // id 'net.caffeinemc.mixin-config-plugin' version '1.0-SNAPSHOT'
+
     id 'maven-publish'
 }
 
 apply from: "${rootProject.projectDir}/gradle/fabric.gradle"
 apply from: "${rootProject.projectDir}/gradle/java.gradle"
 
-apply plugin: 'net.caffeinemc.mixin-config-plugin'
+// apply plugin: 'net.caffeinemc.mixin-config-plugin'
 
 loom {
     accessWidenerPath = file("src/main/resources/lithium.accesswidener")
@@ -118,25 +119,13 @@ dependencies {
     forge "net.minecraftforge:forge:${project.loader_version}"
     modCompileOnly "dev.su5ed.sinytra.fabric-api:fabric-transfer-api-v1:${project.fabric_version}" // Ye
 
-    compileOnly 'net.caffeinemc:mixin-config-plugin:1.0-SNAPSHOT'
-
-    compileOnly("com.github.dima_dencep.mods:NanoLiveConfig:1.2.1") {
-        exclude(group: "dev.su5ed.sinytra.fabric-api")
-    }
+    // Inlined implementation in me.jellysquid.mods.lithium.common.config.caffeine
 }
 
-createMixinConfig {
-    inputFiles = file(compileJava.getDestinationDirectory())
-    includeFiles = file("src/main/java/me/jellysquid/mods/lithium")
-    outputDirectory = file("src/main/resources/assets/lithium/")
-    outputDirectoryForSummaryDocument = file(".")
-    mixinParentPackage = "me.jellysquid.mods.lithium"
-    modShortName = "Lithium"
-}
-
-jar.dependsOn createMixinConfig
-processResources.dependsOn createMixinConfig
-createMixinConfig.dependsOn compileJava
+// createMixinConfig { ... } removed
+// jar.dependsOn createMixinConfig
+// processResources.dependsOn createMixinConfig
+// createMixinConfig.dependsOn compileJava
 
 def getVersionMetadata() {
     // CI builds only
