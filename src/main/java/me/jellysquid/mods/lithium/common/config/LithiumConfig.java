@@ -21,10 +21,19 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
             config.getOption("mixin.alloc.blockstate").addModOverride(false, "ferritecore");
         }
 
-        boolean vsPresent = LoadingModList.get().getModFileById("valkyrienskies") != null
-                || LoadingModList.get().getModFileById("valkyrien_skies") != null
-                || LoadingModList.get().getModFileById("valkyrienskies_core") != null
-                || LoadingModList.get().getModFileById("vs_core") != null;
+        boolean vsPresent = false;
+        try {
+            Class.forName("org.valkyrienskies.core.api.Ship");
+            vsPresent = true;
+        } catch (ClassNotFoundException ignored) {
+            try {
+                Class.forName("org.valkyrienskies.mod.common.ValkyrieSkiesMod");
+                vsPresent = true;
+            } catch (ClassNotFoundException ignored2) {
+                vsPresent = LoadingModList.get().getModFileById("valkyrienskies") != null
+                        || LoadingModList.get().getModFileById("valkyrien_skies") != null;
+            }
+        }
 
         if (vsPresent) {
             config.getOption("mixin.ai.poi").addModOverride(false, "valkyrienskies");

@@ -18,9 +18,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(targets = "net.minecraft.world.chunk.WorldChunk$DirectBlockEntityTickInvoker")
 public abstract class DirectBlockEntityTickInvokerMixin implements WorldBorderListenerOnce {
 
-    @Shadow(aliases = "this$0")
+    @Shadow
     @Final
-    WorldChunk worldChunk;
+    private net.minecraft.block.entity.BlockEntity blockEntity;
 
     @Shadow
     public abstract BlockPos getPos();
@@ -30,9 +30,10 @@ public abstract class DirectBlockEntityTickInvokerMixin implements WorldBorderLi
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/WorldChunk;canTickBlockEntity(Lnet/minecraft/util/math/BlockPos;)Z"))
     private boolean cachedCanTickBlockEntity(WorldChunk instance, BlockPos pos) {
         if (this.isInsideWorldBorder()) {
-            World world = this.worldChunk.getWorld();
+            World world = this.blockEntity.getWorld();
             if (world instanceof ServerWorld serverWorld) {
-                return this.worldChunk.getLevelType().isAfter(ChunkLevelType.BLOCK_TICKING)
+                // We use the instance (WorldChunk) passed to the redirect to get the level type
+                return instance.getLevelType().isAfter(ChunkLevelType.BLOCK_TICKING)
                         && serverWorld.isChunkLoaded(ChunkPos.toLong(pos));
             }
             return true;
@@ -50,12 +51,12 @@ public abstract class DirectBlockEntityTickInvokerMixin implements WorldBorderLi
         if ((worldBorderState & 3) == 3) {
             return (worldBorderState & 4) != 0;
         }
-        return this.worldChunk.getWorld().getWorldBorder().contains(this.getPos());
+        return this.blockEntity.getWorld().getWorldBorder().contains(this.getPos());
     }
 
     private void startWorldBorderCaching() {
         this.worldBorderState = (byte) 1;
-        WorldBorder worldBorder = this.worldChunk.getWorld().getWorldBorder();
+        WorldBorder worldBorder = this.blockEntity.getWorld().getWorldBorder();
         worldBorder.addListener(this);
         boolean isStationary = worldBorder.getStage() == WorldBorderStage.STATIONARY;
         if (worldBorder.contains(this.getPos())) {
