@@ -1,6 +1,7 @@
 package me.jellysquid.mods.lithium.mixin.ai.poi.fast_portals;
 
 import com.mojang.datafixers.DataFixer;
+import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.datafixer.DataFixTypes;
@@ -15,11 +16,15 @@ import net.minecraft.world.poi.PointOfInterestSet;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.storage.SerializingRegionBasedStorage;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.function.Function;
 
-@Mixin(PointOfInterestStorage.class)
+@Mixin(value = PointOfInterestStorage.class, priority = 1100)
 public abstract class PointOfInterestStorageMixin extends SerializingRegionBasedStorage<PointOfInterestSet> {
 
     @Shadow
@@ -31,33 +36,21 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
     @Unique
     private int preloadRadius = 0;
 
-    public PointOfInterestStorageMixin(
-            Path path, DataFixer dataFixer, boolean dsync,
-            DynamicRegistryManager registryManager, HeightLimitView world
-    ) {
-        super(
-                path, PointOfInterestSet::createCodec, PointOfInterestSet::new,
-                dataFixer, DataFixTypes.POI_CHUNK, dsync, registryManager, world
-        );
+    public PointOfInterestStorageMixin(Path path, Function<Runnable, Codec<PointOfInterestSet>> codecFactory,
+            Function<Runnable, PointOfInterestSet> factory, DataFixer dataFixer, DataFixTypes dataFixTypes,
+            boolean dsync, DynamicRegistryManager dynamicRegistryManager, HeightLimitView world) {
+        super(path, codecFactory, factory, dataFixer, dataFixTypes, dsync, dynamicRegistryManager, world);
     }
 
-    /**
-     * @author Crec0, 2No2Name
-     * @reason Streams in this method cause unnecessary lag. Simply rewriting this to not use streams, we gain
-     * considerable performance. Noticeable when large amount of entities are traveling through nether portals.
-     * Furthermore, caching whether all surrounding chunks are loaded is more efficient than caching the state
-     * of single chunks only.
-     */
-    @Overwrite
-    public void preloadChunks(WorldView worldView, BlockPos pos, int radius) {
+    @Inject(method = "preloadChunks", at = @At("HEAD"), cancellable = true)
+    public void onPreloadChunks(WorldView worldView, BlockPos pos, int radius, CallbackInfo ci) {
         if (this.preloadRadius != radius) {
-            //Usually there is only one preload radius per PointOfInterestStorage. Just in case another mod adjusts it dynamically, we avoid
-            //assuming its value.
             this.preloadedCenterChunks.clear();
             this.preloadRadius = radius;
         }
         long chunkPos = ChunkPos.toLong(pos);
         if (this.preloadedCenterChunks.contains(chunkPos)) {
+            ci.cancel();
             return;
         }
         int chunkX = ChunkSectionPos.getSectionCoord(pos.getX());
@@ -73,6 +66,7 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
             }
         }
         this.preloadedCenterChunks.add(chunkPos);
+        ci.cancel();
     }
 
     @Unique
