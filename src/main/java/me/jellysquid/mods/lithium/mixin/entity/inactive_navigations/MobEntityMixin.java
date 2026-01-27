@@ -50,11 +50,6 @@ public abstract class MobEntityMixin extends Entity implements NavigatingEntity 
     @Intrinsic
     public void stopRiding() {
         super.stopRiding();
-    }
-
-    @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
-    @Inject(method = "stopRiding()V", at = @At("RETURN"))
-    private void updateOnStopRiding(CallbackInfo ci) {
         this.updateNavigationRegistration();
     }
 

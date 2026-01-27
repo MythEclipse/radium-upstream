@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(targets = "net.minecraft.world.chunk.WorldChunk$DirectBlockEntityTickInvoker")
 public abstract class DirectBlockEntityTickInvokerMixin implements WorldBorderListenerOnce {
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     WorldChunk worldChunk;
 
@@ -27,18 +27,13 @@ public abstract class DirectBlockEntityTickInvokerMixin implements WorldBorderLi
 
     private byte worldBorderState = 0;
 
-    @Redirect(
-            method = "tick",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/chunk/WorldChunk;canTickBlockEntity(Lnet/minecraft/util/math/BlockPos;)Z"
-            )
-    )
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/WorldChunk;canTickBlockEntity(Lnet/minecraft/util/math/BlockPos;)Z"))
     private boolean cachedCanTickBlockEntity(WorldChunk instance, BlockPos pos) {
         if (this.isInsideWorldBorder()) {
             World world = this.worldChunk.getWorld();
             if (world instanceof ServerWorld serverWorld) {
-                return this.worldChunk.getLevelType().isAfter(ChunkLevelType.BLOCK_TICKING) && serverWorld.isChunkLoaded(ChunkPos.toLong(pos));
+                return this.worldChunk.getLevelType().isAfter(ChunkLevelType.BLOCK_TICKING)
+                        && serverWorld.isChunkLoaded(ChunkPos.toLong(pos));
             }
             return true;
         } else {

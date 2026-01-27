@@ -53,18 +53,21 @@ public abstract class AbstractFurnaceBlockEntityMixin extends BlockEntity implem
         this.sleepingTicker = sleepingTicker;
     }
 
-    @Inject(method = "tick", at = @At("RETURN" ))
-    private static void checkSleep(World world, BlockPos pos, BlockState state, AbstractFurnaceBlockEntity blockEntity, CallbackInfo ci) {
+    @Inject(method = "tick", at = @At("RETURN"))
+    private static void checkSleep(World world, BlockPos pos, BlockState state, AbstractFurnaceBlockEntity blockEntity,
+            CallbackInfo ci) {
         ((AbstractFurnaceBlockEntityMixin) (Object) blockEntity).checkSleep(state);
     }
 
     private void checkSleep(BlockState state) {
-        if (!this.isBurning() && this.cookTime == 0 && (state.isOf(Blocks.FURNACE) || state.isOf(Blocks.BLAST_FURNACE) || state.isOf(Blocks.SMOKER)) && this.world != null) {
+        if (!this.isBurning() && this.cookTime == 0
+                && (state.isOf(Blocks.FURNACE) || state.isOf(Blocks.BLAST_FURNACE) || state.isOf(Blocks.SMOKER))
+                && this.world != null) {
             this.startSleeping();
         }
     }
 
-    @Inject(method = "readNbt", at = @At("RETURN" ))
+    @Inject(method = "readNbt", at = @At("RETURN"))
     private void wakeUpAfterFromTag(CallbackInfo ci) {
         if (this.isSleeping() && this.world != null && !this.world.isClient) {
             this.wakeUpNow();
@@ -75,11 +78,6 @@ public abstract class AbstractFurnaceBlockEntityMixin extends BlockEntity implem
     @Intrinsic
     public void markDirty() {
         super.markDirty();
-    }
-
-    @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
-    @Inject(method = "markDirty()V", at = @At("RETURN"))
-    private void wakeOnMarkDirty(CallbackInfo ci) {
         if (this.isSleeping() && this.world != null && !this.world.isClient) {
             this.wakeUpNow();
         }

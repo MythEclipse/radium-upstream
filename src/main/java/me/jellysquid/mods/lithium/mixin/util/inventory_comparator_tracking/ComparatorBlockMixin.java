@@ -23,14 +23,6 @@ public abstract class ComparatorBlockMixin extends AbstractRedstoneGateBlock {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onBlockAdded(state, world, pos, oldState, notify);
-    }
-
-    @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
-    @Inject(
-            method = "onBlockAdded(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Z)V",
-            at = @At("RETURN")
-    )
-    private void notifyOnBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify, CallbackInfo ci) {
         if (!oldState.isOf(Blocks.COMPARATOR)) {
             ComparatorTracking.notifyNearbyBlockEntitiesAboutNewComparator(world, pos);
         }

@@ -20,55 +20,39 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(targets = "net/minecraft/server/world/ServerEntityManager$Listener")
 public class ServerEntityManagerListenerMixin<T extends EntityLike> {
-    @Shadow
-    @Final
-    private T entity;
+        @Shadow
+        @Final
+        private T entity;
 
-    @Final
-    @SuppressWarnings("ShadowTarget")
-    @Shadow
-    ServerEntityManager<T> manager;
+        @Final
+        @Shadow(remap = false)
+        ServerEntityManager<T> manager;
 
-    @Shadow
-    private long sectionPos;
+        @Shadow
+        private long sectionPos;
 
-    @Inject(
-            method = "updateEntityPosition()V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/EntityTrackingSection;add(Lnet/minecraft/world/entity/EntityLike;)V",
-                    shift = At.Shift.AFTER
-            ),
-            locals = LocalCapture.CAPTURE_FAILHARD
-    )
-    private void onUpdateEntityPosition(CallbackInfo ci, BlockPos blockPos, long newPos, EntityTrackingStatus entityTrackingStatus, EntityTrackingSection<T> entityTrackingSection) {
-        NearbyEntityListenerMulti listener = ((NearbyEntityListenerProvider) this.entity).getListener();
-        if (listener != null)
-        {
-            Range6Int chunkRange = listener.getChunkRange();
-            //noinspection unchecked
-            listener.updateChunkRegistrations(
-                    ((ServerEntityManagerAccessor<T>) this.manager).getCache(),
-                    ChunkSectionPos.from(this.sectionPos), chunkRange,
-                    ChunkSectionPos.from(newPos), chunkRange
-            );
+        @Inject(method = "updateEntityPosition()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityTrackingSection;add(Lnet/minecraft/world/entity/EntityLike;)V", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
+        private void onUpdateEntityPosition(CallbackInfo ci, BlockPos blockPos, long newPos,
+                        EntityTrackingStatus entityTrackingStatus, EntityTrackingSection<T> entityTrackingSection) {
+                NearbyEntityListenerMulti listener = ((NearbyEntityListenerProvider) this.entity).getListener();
+                if (listener != null) {
+                        Range6Int chunkRange = listener.getChunkRange();
+                        // noinspection unchecked
+                        listener.updateChunkRegistrations(
+                                        ((ServerEntityManagerAccessor<T>) this.manager).getCache(),
+                                        ChunkSectionPos.from(this.sectionPos), chunkRange,
+                                        ChunkSectionPos.from(newPos), chunkRange);
+                }
         }
-    }
 
-    @Inject(
-            method = "remove(Lnet/minecraft/entity/Entity$RemovalReason;)V",
-            at = @At(
-                    value = "HEAD"
-            )
-    )
-    private void onRemoveEntity(Entity.RemovalReason reason, CallbackInfo ci) {
-        NearbyEntityListenerMulti listener = ((NearbyEntityListenerProvider) this.entity).getListener();
-        if (listener != null) {
-            //noinspection unchecked
-            listener.removeFromAllChunksInRange(
-                    ((ServerEntityManagerAccessor<T>) this.manager).getCache(),
-                    ChunkSectionPos.from(this.sectionPos)
-            );
+        @Inject(method = "remove(Lnet/minecraft/entity/Entity$RemovalReason;)V", at = @At(value = "HEAD"))
+        private void onRemoveEntity(Entity.RemovalReason reason, CallbackInfo ci) {
+                NearbyEntityListenerMulti listener = ((NearbyEntityListenerProvider) this.entity).getListener();
+                if (listener != null) {
+                        // noinspection unchecked
+                        listener.removeFromAllChunksInRange(
+                                        ((ServerEntityManagerAccessor<T>) this.manager).getCache(),
+                                        ChunkSectionPos.from(this.sectionPos));
+                }
         }
-    }
 }

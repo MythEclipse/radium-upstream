@@ -18,18 +18,8 @@ public abstract class ChestBoatEntityMixin extends Entity {
         super(type, world);
     }
 
-    @Intrinsic
     @Override
     public void tickRiding() {
-        super.tickRiding();
-    }
-
-    @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
-    @Redirect(
-            method = "tickRiding()V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tickRiding()V")
-    )
-    private void tickRidingSummarizeMovementNotifications(Entity entity) {
         EntityChangeListener changeListener = ((EntityAccessor) this).getChangeListener();
         if (changeListener instanceof ToggleableMovementTracker toggleableMovementTracker) {
             Vec3d beforeTickPos = this.getPos();

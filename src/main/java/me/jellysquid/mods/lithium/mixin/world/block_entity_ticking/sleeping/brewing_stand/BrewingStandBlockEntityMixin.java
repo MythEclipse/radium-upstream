@@ -52,12 +52,14 @@ public class BrewingStandBlockEntityMixin extends BlockEntity implements Sleepin
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
-    private static void checkSleep(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity blockEntity, CallbackInfo ci) {
+    private static void checkSleep(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity blockEntity,
+            CallbackInfo ci) {
         ((BrewingStandBlockEntityMixin) (Object) blockEntity).checkSleep(state);
     }
 
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/BrewingStandBlockEntity;markDirty(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"))
-    private static void wakeUpOnMarkDirty(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity blockEntity, CallbackInfo ci) {
+    private static void wakeUpOnMarkDirty(World world, BlockPos pos, BlockState state,
+            BrewingStandBlockEntity blockEntity, CallbackInfo ci) {
         ((BrewingStandBlockEntityMixin) (Object) blockEntity).wakeUpNow();
     }
 
@@ -78,11 +80,6 @@ public class BrewingStandBlockEntityMixin extends BlockEntity implements Sleepin
     @Intrinsic
     public void markDirty() {
         super.markDirty();
-    }
-
-    @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
-    @Inject(method = "markDirty()V", at = @At("RETURN"))
-    private void wakeOnMarkDirty(CallbackInfo ci) {
         if (this.isSleeping() && this.world != null && !this.world.isClient) {
             this.wakeUpNow();
         }
