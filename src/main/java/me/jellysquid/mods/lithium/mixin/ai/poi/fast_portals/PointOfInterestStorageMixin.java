@@ -24,7 +24,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Mixin(value = PointOfInterestStorage.class, priority = 1100)
+@Mixin(value = PointOfInterestStorage.class, priority = 2000)
 public abstract class PointOfInterestStorageMixin extends SerializingRegionBasedStorage<PointOfInterestSet> {
 
     @Shadow
@@ -70,11 +70,13 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
     }
 
     @Unique
-    private void lithium$preloadChunkIfAnySubChunkContainsPOI(WorldView worldView, int x, int z, int minSubChunk, int maxSubChunk) {
+    private void lithium$preloadChunkIfAnySubChunkContainsPOI(WorldView worldView, int x, int z, int minSubChunk,
+            int maxSubChunk) {
         ChunkPos chunkPos = new ChunkPos(x, z);
         long longChunkPos = chunkPos.toLong();
 
-        if (this.preloadedChunks.contains(longChunkPos)) return;
+        if (this.preloadedChunks.contains(longChunkPos))
+            return;
 
         for (int y = minSubChunk; y <= maxSubChunk; y++) {
             Optional<PointOfInterestSet> section = this.get(ChunkSectionPos.asLong(x, y, z));

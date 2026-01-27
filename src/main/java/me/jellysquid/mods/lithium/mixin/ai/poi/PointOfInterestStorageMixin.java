@@ -37,7 +37,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-@Mixin(value = PointOfInterestStorage.class, priority = 1100)
+@Mixin(value = PointOfInterestStorage.class, priority = 2000)
 public abstract class PointOfInterestStorageMixin extends SerializingRegionBasedStorage<PointOfInterestSet>
         implements PointOfInterestStorageExtended {
 

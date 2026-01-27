@@ -23,14 +23,15 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
 
         boolean vsPresent = LoadingModList.get().getModFileById("valkyrienskies") != null
                 || LoadingModList.get().getModFileById("valkyrien_skies") != null
-                || LoadingModList.get().getModFileById("valkyrieskies") != null;
+                || LoadingModList.get().getModFileById("valkyrienskies_core") != null
+                || LoadingModList.get().getModFileById("vs_core") != null;
 
         if (vsPresent) {
             config.getOption("mixin.ai.poi").addModOverride(false, "valkyrienskies");
             config.getOption("mixin.ai.poi.fast_portals").addModOverride(false, "valkyrienskies");
             config.getOption("mixin.ai.poi.tasks").addModOverride(false, "valkyrienskies");
-            System.out.println(
-                    "[Radium] Valkyrie Skies detected! Disabling POI optimizations to prevent compatibility issues.");
+            System.err.println(
+                    "[Radium] Valkyrie Skies detected! Automatically disabling conflicting POI optimizations.");
         }
 
         Option option = config.getOption("mixin.block.hopper.worldedit_compat");
