@@ -30,8 +30,9 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
             config.getOption("mixin.ai.poi").addModOverride(false, "valkyrienskies");
             config.getOption("mixin.ai.poi.fast_portals").addModOverride(false, "valkyrienskies");
             config.getOption("mixin.ai.poi.tasks").addModOverride(false, "valkyrienskies");
+            config.getOption("mixin.world.block_entity_ticking.world_border").addModOverride(false, "valkyrienskies");
             System.err.println(
-                    "[Radium] Valkyrie Skies detected! Automatically disabling conflicting POI optimizations.");
+                    "[Radium] Valkyrie Skies detected! Automatically disabling conflicting status/POI optimizations.");
         }
 
         Option option = config.getOption("mixin.block.hopper.worldedit_compat");

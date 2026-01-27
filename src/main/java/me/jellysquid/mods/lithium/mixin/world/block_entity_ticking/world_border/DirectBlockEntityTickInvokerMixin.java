@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(targets = "net.minecraft.world.chunk.WorldChunk$DirectBlockEntityTickInvoker")
 public abstract class DirectBlockEntityTickInvokerMixin implements WorldBorderListenerOnce {
 
-    @Shadow(remap = false)
+    @Shadow(aliases = "this$0")
     @Final
     WorldChunk worldChunk;
 
