@@ -18,33 +18,21 @@ public class NoiseChunkGeneratorMixin {
     @Shadow
     @Final
     private RegistryEntry<ChunkGeneratorSettings> settings;
-    private int cachedSeaLevel;
+    private int cachedSeaLevel = -1;
 
     /**
      * Use cached sea level instead of retrieving from the registry every time.
-     * This method is called for every block in the chunk so this will save a lot of registry lookups.
+     * This method is called for every block in the chunk so this will save a lot of
+     * registry lookups.
      *
      * @author SuperCoder79
      * @reason avoid registry lookup
      */
     @Overwrite
     public int getSeaLevel() {
+        if (this.cachedSeaLevel == -1) {
+            this.cachedSeaLevel = this.settings.value().seaLevel();
+        }
         return this.cachedSeaLevel;
-    }
-
-    /**
-     * Initialize the cache early in the ctor to avoid potential future problems with uninitialized usages
-     */
-    @Inject(
-            method = "<init>",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lcom/google/common/base/Suppliers;memoize(Lcom/google/common/base/Supplier;)Lcom/google/common/base/Supplier;",
-                    remap = false,
-                    shift = At.Shift.BEFORE
-            )
-    )
-    private void hookConstructor(BiomeSource biomeSource, RegistryEntry<ChunkGeneratorSettings> settings, CallbackInfo ci) {
-        this.cachedSeaLevel = this.settings.value().seaLevel(); //TODO FIX Crash due to early access of registry
     }
 }

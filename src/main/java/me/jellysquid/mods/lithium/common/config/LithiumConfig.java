@@ -37,30 +37,34 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
 
     public LithiumConfig() {
         super();
-
+        System.out.println("[Radium Debug] LithiumConfig constructor called");
         LithiumMod.CONFIG = this;
     }
 
     @Override
     protected CaffeineConfig createConfig() {
+        System.out.println("[Radium Debug] LithiumConfig.createConfig called");
         CaffeineConfig.Builder builder = CaffeineConfig.builder("Radium")
                 .withInfoUrl("https://github.com/jellysquid3/lithium-fabric/wiki/Configuration-File")
                 .withSettingsKey("lithium:options");
 
         // Defines the default rules which can be configured by the user or other mods.
-        InputStream defaultPropertiesStream = LithiumConfig.class.getResourceAsStream("/assets/lithium/lithium-mixin-config-default.properties");
+        InputStream defaultPropertiesStream = LithiumConfig.class
+                .getResourceAsStream("/assets/lithium/lithium-mixin-config-default.properties");
         if (defaultPropertiesStream == null) {
             throw new IllegalStateException("Lithium mixin config default properties could not be read!");
         }
         try (BufferedReader propertiesReader = new BufferedReader(new InputStreamReader(defaultPropertiesStream))) {
             Properties properties = new Properties();
             properties.load(propertiesReader);
-            properties.forEach((ruleName, enabled) -> builder.addMixinRule((String) ruleName, Boolean.parseBoolean((String) enabled)));
+            properties.forEach((ruleName, enabled) -> builder.addMixinRule((String) ruleName,
+                    Boolean.parseBoolean((String) enabled)));
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalStateException("Lithium mixin config default properties could not be read!");
         }
-        InputStream dependenciesStream = LithiumConfig.class.getResourceAsStream("/assets/lithium/lithium-mixin-config-dependencies.properties");
+        InputStream dependenciesStream = LithiumConfig.class
+                .getResourceAsStream("/assets/lithium/lithium-mixin-config-dependencies.properties");
         if (dependenciesStream == null) {
             throw new IllegalStateException("Lithium mixin config dependencies could not be read!");
         }
@@ -81,8 +85,7 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
                             String requiredState = split[1];
                             builder.addRuleDependency(rulename, dependencyName, Boolean.parseBoolean(requiredState));
                         }
-                    }
-            );
+                    });
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalStateException("Lithium mixin config dependencies could not be read!");
