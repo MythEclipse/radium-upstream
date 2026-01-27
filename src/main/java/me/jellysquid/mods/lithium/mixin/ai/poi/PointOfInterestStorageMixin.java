@@ -29,6 +29,9 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -44,7 +47,9 @@ import java.util.stream.StreamSupport;
 public abstract class PointOfInterestStorageMixin extends SerializingRegionBasedStorage<PointOfInterestSet>
         implements PointOfInterestStorageExtended {
 
-    public PointOfInterestStorageMixin(Path path, Function<Runnable, Codec<PointOfInterestSet>> codecFactory, Function<Runnable, PointOfInterestSet> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean dsync, DynamicRegistryManager dynamicRegistryManager, HeightLimitView world) {
+    public PointOfInterestStorageMixin(Path path, Function<Runnable, Codec<PointOfInterestSet>> codecFactory,
+            Function<Runnable, PointOfInterestSet> factory, DataFixer dataFixer, DataFixTypes dataFixTypes,
+            boolean dsync, DynamicRegistryManager dynamicRegistryManager, HeightLimitView world) {
         super(path, codecFactory, factory, dataFixer, dataFixTypes, dsync, dynamicRegistryManager, world);
     }
 
@@ -56,7 +61,7 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
     @SuppressWarnings("unchecked")
     @Overwrite
     public Stream<PointOfInterest> getInChunk(Predicate<RegistryEntry<PointOfInterestType>> predicate, ChunkPos pos,
-                                              PointOfInterestStorage.OccupationStatus status) {
+            PointOfInterestStorage.OccupationStatus status) {
         return ((RegionBasedStorageSectionExtended<PointOfInterestSet>) this)
                 .getWithinChunkColumn(pos.x, pos.z)
                 .flatMap(set -> set.get(predicate, status));
@@ -69,17 +74,18 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
      * @author JellySquid
      */
     @Overwrite
-    public Optional<BlockPos> getPosition(Predicate<RegistryEntry<PointOfInterestType>> typePredicate, Predicate<BlockPos> posPredicate,
-                                          PointOfInterestStorage.OccupationStatus status, BlockPos pos, int radius,
-                                          Random rand) {
+    public Optional<BlockPos> getPosition(Predicate<RegistryEntry<PointOfInterestType>> typePredicate,
+            Predicate<BlockPos> posPredicate,
+            PointOfInterestStorage.OccupationStatus status, BlockPos pos, int radius,
+            Random rand) {
         ArrayList<PointOfInterest> list = this.withinSphereChunkSectionSorted(typePredicate, pos, radius, status);
 
         for (int i = list.size() - 1; i >= 0; i--) {
-            //shuffle by swapping randomly
+            // shuffle by swapping randomly
             PointOfInterest currentPOI = list.set(rand.nextInt(i + 1), list.get(i));
-            list.set(i, currentPOI); //Move to the end of the unconsumed part of the list
+            list.set(i, currentPOI); // Move to the end of the unconsumed part of the list
 
-            //consume while shuffling, abort shuffling when result found
+            // consume while shuffling, abort shuffling when result found
             if (posPredicate.test(currentPOI.getPos())) {
                 return Optional.of(currentPOI.getPos());
             }
@@ -91,96 +97,98 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
     /**
      * Gets the closest POI that matches the requirements.
      *
-     * @reason Avoid stream-heavy code, use a faster iterator and callback-based approach
+     * @reason Avoid stream-heavy code, use a faster iterator and callback-based
+     *         approach
      * @author 2No2Name
      */
     @Overwrite
-    public Optional<BlockPos> getNearestPosition(Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos pos, int radius,
-                                                 PointOfInterestStorage.OccupationStatus status) {
+    public Optional<BlockPos> getNearestPosition(Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos pos,
+            int radius,
+            PointOfInterestStorage.OccupationStatus status) {
         return this.getNearestPosition(predicate, null, pos, radius, status);
     }
 
     /**
      * Gets the closest POI that matches the requirements.
-     * If there are several closest POIs, negative chunk coordinate first (sort by x, then z, then y)
+     * If there are several closest POIs, negative chunk coordinate first (sort by
+     * x, then z, then y)
      *
-     * @reason Avoid stream-heavy code, use a faster iterator and callback-based approach
+     * @reason Avoid stream-heavy code, use a faster iterator and callback-based
+     *         approach
      * @author JellySquid, 2No2Name
      */
     @Overwrite
     public Optional<BlockPos> getNearestPosition(Predicate<RegistryEntry<PointOfInterestType>> predicate,
-                                                 Predicate<BlockPos> posPredicate, BlockPos pos, int radius,
-                                                 PointOfInterestStorage.OccupationStatus status) {
-        Stream<PointOfInterest> pointOfInterestStream = this.streamOutwards(pos, radius, status, true, false, predicate, posPredicate == null ? null : poi -> posPredicate.test(poi.getPos()));
+            Predicate<BlockPos> posPredicate, BlockPos pos, int radius,
+            PointOfInterestStorage.OccupationStatus status) {
+        Stream<PointOfInterest> pointOfInterestStream = this.streamOutwards(pos, radius, status, true, false, predicate,
+                posPredicate == null ? null : poi -> posPredicate.test(poi.getPos()));
         return pointOfInterestStream.map(PointOfInterest::getPos).findFirst();
     }
 
     /**
      * Get number of matching POIs in sphere
      *
-     * @reason Avoid stream-heavy code, use a faster iterator and callback-based approach
+     * @reason Avoid stream-heavy code, use a faster iterator and callback-based
+     *         approach
      * @author JellySquid
      */
     @Overwrite
     public long count(Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos pos, int radius,
-                      PointOfInterestStorage.OccupationStatus status) {
+            PointOfInterestStorage.OccupationStatus status) {
         return this.withinSphereChunkSectionSorted(predicate, pos, radius, status).size();
     }
 
-    /**
-     * Get all POI in sphere around origin with given radius. Order is vanilla order
-     * Vanilla order (might be undefined, but pratically):
-     * Chunk section order: Negative X first, if equal, negative Z first, if equal, negative Y first.
-     * Within the chunk section: Whatever the internal order is (we are not modifying that)
-     *
-     * @author JellySquid
-     * @reason Avoid stream-heavy code, use faster filtering and fetches
-     */
-    @Overwrite
-    public Stream<PointOfInterest> getInCircle(Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos sphereOrigin, int radius,
-                                               PointOfInterestStorage.OccupationStatus status) {
-        return this.withinSphereChunkSectionSortedStream(predicate, sphereOrigin, radius, status);
+    @Inject(method = "getInCircle", at = @At("HEAD"), cancellable = true)
+    private void onGetInCircle(Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos sphereOrigin,
+            int radius,
+            PointOfInterestStorage.OccupationStatus status, CallbackInfoReturnable<Stream<PointOfInterest>> cir) {
+        cir.setReturnValue(this.withinSphereChunkSectionSortedStream(predicate, sphereOrigin, radius, status));
     }
 
     @Override
-    public Optional<PointOfInterest> findNearestForPortalLogic(BlockPos origin, int radius, RegistryEntry<PointOfInterestType> type,
-                                                               PointOfInterestStorage.OccupationStatus status,
-                                                               Predicate<PointOfInterest> afterSortPredicate, WorldBorder worldBorder) {
+    public Optional<PointOfInterest> findNearestForPortalLogic(BlockPos origin, int radius,
+            RegistryEntry<PointOfInterestType> type,
+            PointOfInterestStorage.OccupationStatus status,
+            Predicate<PointOfInterest> afterSortPredicate, WorldBorder worldBorder) {
         // Order of the POI:
         // return closest accepted POI (L2 distance). If several exist:
         // return the one with most negative Y. If several exist:
         // return the one with most negative X. If several exist:
-        // return the one with most negative Z. If several exist: Be confused about two POIs being in the same location.
+        // return the one with most negative Z. If several exist: Be confused about two
+        // POIs being in the same location.
 
-        boolean worldBorderIsFarAway = worldBorder == null || worldBorder.getDistanceInsideBorder(origin.getX(), origin.getZ()) > radius + 3;
+        boolean worldBorderIsFarAway = worldBorder == null
+                || worldBorder.getDistanceInsideBorder(origin.getX(), origin.getZ()) > radius + 3;
         Predicate<PointOfInterest> poiPredicateAfterSorting;
         if (worldBorderIsFarAway) {
             poiPredicateAfterSorting = afterSortPredicate;
         } else {
             poiPredicateAfterSorting = poi -> worldBorder.contains(poi.getPos()) && afterSortPredicate.test(poi);
         }
-        return this.streamOutwards(origin, radius, status, true, true, new SinglePointOfInterestTypeFilter(type), poiPredicateAfterSorting).findFirst();
+        return this.streamOutwards(origin, radius, status, true, true, new SinglePointOfInterestTypeFilter(type),
+                poiPredicateAfterSorting).findFirst();
     }
 
-    private Stream<PointOfInterest> withinSphereChunkSectionSortedStream(Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos origin,
-                                                                         int radius, PointOfInterestStorage.OccupationStatus status) {
+    private Stream<PointOfInterest> withinSphereChunkSectionSortedStream(
+            Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos origin,
+            int radius, PointOfInterestStorage.OccupationStatus status) {
         double radiusSq = radius * radius;
-
 
         // noinspection unchecked
         RegionBasedStorageSectionExtended<PointOfInterestSet> storage = (RegionBasedStorageSectionExtended<PointOfInterestSet>) this;
 
-
-        Stream<Stream<PointOfInterestSet>> stream = StreamSupport.stream(new SphereChunkOrderedPoiSetSpliterator(radius, origin, storage), false);
+        Stream<Stream<PointOfInterestSet>> stream = StreamSupport
+                .stream(new SphereChunkOrderedPoiSetSpliterator(radius, origin, storage), false);
 
         return stream.flatMap((Stream<PointOfInterestSet> setStream) -> setStream.flatMap(
                 (PointOfInterestSet set) -> set.get(predicate, status)
-                        .filter(point -> Distances.isWithinCircleRadius(origin, radiusSq, point.getPos()))
-        ));
+                        .filter(point -> Distances.isWithinCircleRadius(origin, radiusSq, point.getPos()))));
     }
 
-    private ArrayList<PointOfInterest> withinSphereChunkSectionSorted(Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos origin,
-                                                                      int radius, PointOfInterestStorage.OccupationStatus status) {
+    private ArrayList<PointOfInterest> withinSphereChunkSectionSorted(
+            Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos origin,
+            int radius, PointOfInterestStorage.OccupationStatus status) {
         double radiusSq = radius * radius;
 
         int minChunkX = origin.getX() - radius - 1 >> 4;
@@ -211,17 +219,19 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
     }
 
     private Stream<PointOfInterest> streamOutwards(BlockPos origin, int radius,
-                                                   PointOfInterestStorage.OccupationStatus status,
-                                                   @SuppressWarnings("SameParameterValue") boolean useSquareDistanceLimit,
-                                                   boolean preferNegativeY,
-                                                   Predicate<RegistryEntry<PointOfInterestType>> typePredicate,
-                                                   @Nullable Predicate<PointOfInterest> afterSortingPredicate) {
+            PointOfInterestStorage.OccupationStatus status,
+            @SuppressWarnings("SameParameterValue") boolean useSquareDistanceLimit,
+            boolean preferNegativeY,
+            Predicate<RegistryEntry<PointOfInterestType>> typePredicate,
+            @Nullable Predicate<PointOfInterest> afterSortingPredicate) {
         // noinspection unchecked
         RegionBasedStorageSectionExtended<PointOfInterestSet> storage = (RegionBasedStorageSectionExtended<PointOfInterestSet>) this;
 
-        return StreamSupport.stream(new NearbyPointOfInterestStream(typePredicate, status, useSquareDistanceLimit, preferNegativeY, afterSortingPredicate, origin, radius, storage), false);
+        return StreamSupport.stream(new NearbyPointOfInterestStream(typePredicate, status, useSquareDistanceLimit,
+                preferNegativeY, afterSortingPredicate, origin, radius, storage), false);
     }
 
     @Shadow
-    protected abstract void scanAndPopulate(ChunkSection section, ChunkSectionPos sectionPos, BiConsumer<BlockPos, PointOfInterestType> entryConsumer);
+    protected abstract void scanAndPopulate(ChunkSection section, ChunkSectionPos sectionPos,
+            BiConsumer<BlockPos, PointOfInterestType> entryConsumer);
 }
