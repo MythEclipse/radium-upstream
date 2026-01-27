@@ -8,7 +8,4 @@ pluginManagement {
     }
 }
 
-includeBuild "components/mixin-config-plugin"
-includeBuild "components/caffeine-config-lib"
-
 rootProject.name = "radium"
