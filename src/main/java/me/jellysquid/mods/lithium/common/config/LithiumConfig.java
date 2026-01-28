@@ -21,6 +21,9 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
             config.getOption("mixin.alloc.blockstate").addModOverride(false, "ferritecore");
         }
 
+        // Force enable safety mixins for VS2 compatibility
+        config.getOption("mixin.world.safety").addModOverride(true, "radium");
+
         boolean vsPresent = false;
         try {
             Class.forName("org.valkyrienskies.core.api.Ship");
