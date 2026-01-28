@@ -18,11 +18,14 @@ public class SectionedInventoryEntityMovementTracker<S> extends SectionedEntityM
         super(entityAccessBox, clazz);
     }
 
-    public static <S> SectionedInventoryEntityMovementTracker<S> registerAt(ServerWorld world, Box interactionArea, Class<S> clazz) {
-        MovementTrackerCache cache = (MovementTrackerCache) ((ServerEntityManagerAccessor<?>) ((ServerWorldAccessor) world).getEntityManager()).getCache();
+    public static <S> SectionedInventoryEntityMovementTracker<S> registerAt(ServerWorld world, Box interactionArea,
+            Class<S> clazz) {
+        MovementTrackerCache cache = (MovementTrackerCache) ((ServerEntityManagerAccessor<?>) ((ServerWorldAccessor) world)
+                .getEntityManager()).getCache();
 
         WorldSectionBox worldSectionBox = WorldSectionBox.entityAccessBox(world, interactionArea);
-        SectionedInventoryEntityMovementTracker<S> tracker = new SectionedInventoryEntityMovementTracker<>(worldSectionBox, clazz);
+        SectionedInventoryEntityMovementTracker<S> tracker = new SectionedInventoryEntityMovementTracker<>(
+                worldSectionBox, clazz);
         tracker = cache.deduplicate(tracker);
 
         tracker.register(world);
@@ -30,11 +33,15 @@ public class SectionedInventoryEntityMovementTracker<S> extends SectionedEntityM
     }
 
     public List<S> getEntities(Box box) {
+        if (!me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions.isBoxFinite(box)) {
+            return java.util.Collections.emptyList();
+        }
         ArrayList<S> entities = new ArrayList<>();
         for (int i = 0; i < this.sortedSections.size(); i++) {
             if (this.sectionVisible[i]) {
-                //noinspection unchecked
-                TypeFilterableList<S> collection = ((EntityTrackingSectionAccessor<S>) this.sortedSections.get(i)).getCollection();
+                // noinspection unchecked
+                TypeFilterableList<S> collection = ((EntityTrackingSectionAccessor<S>) this.sortedSections.get(i))
+                        .getCollection();
 
                 for (S entity : collection.getAllOfType(this.clazz)) {
                     Entity inventoryEntity = (Entity) entity;

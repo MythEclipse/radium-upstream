@@ -229,7 +229,9 @@
     "world.player_chunk_tick.ThreadedAnvilChunkStorageMixin",
     "world.temperature_cache.BiomeMixin",
     "world.tick_scheduler.ChunkTickSchedulerMixin",
-    "world.safety.WorldSafetyMixin"
+    "world.safety.WorldSafetyMixin",
+    "world.safety.ServerWorldSafetyMixin",
+    "world.safety.ClientWorldSafetyMixin"
   ],
   "client": ["chunk.entity_class_groups.ClientEntityManagerAccessor", "chunk.entity_class_groups.ClientWorldMixin"]
 }

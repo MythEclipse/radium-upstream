@@ -15,14 +15,17 @@ import java.util.function.Predicate;
 @Mixin(value = World.class, priority = 2000)
 public class WorldSafetyMixin {
     @Inject(method = "getOtherEntities", at = @At("HEAD"), cancellable = true)
-    private void guardGetOtherEntities(Entity except, Box box, Predicate<? super Entity> predicate, CallbackInfoReturnable<List<Entity>> cir) {
+    private void guardGetOtherEntities(Entity except, Box box, Predicate<? super Entity> predicate,
+            CallbackInfoReturnable<List<Entity>> cir) {
         if (!LithiumEntityCollisions.isBoxFinite(box)) {
             cir.setReturnValue(Collections.emptyList());
         }
     }
 
-    @Inject(method = {"getEntities", "method_8335", "m_45933_"}, at = @At("HEAD"), cancellable = true, remap = false, require = 0, expect = 0)
-    private void guardGetEntities(Entity except, Box box, Predicate<? super Entity> predicate, CallbackInfoReturnable<List<Entity>> cir) {
+    @Inject(method = { "getEntities", "method_8335", "m_45933_",
+            "getEntities(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;" }, at = @At("HEAD"), cancellable = true, remap = false, require = 0, expect = 0)
+    private void guardGetEntities(Entity except, Box box, Predicate<? super Entity> predicate,
+            CallbackInfoReturnable<List<Entity>> cir) {
         if (!LithiumEntityCollisions.isBoxFinite(box)) {
             cir.setReturnValue(Collections.emptyList());
         }

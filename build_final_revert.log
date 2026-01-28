@@ -7,7 +7,35 @@ Architectury Loom: 1.10.437
 > Task :compileApiJava FROM-CACHE
 > Task :processApiResources NO-SOURCE
 > Task :apiClasses UP-TO-DATE
-> Task :compileJava FROM-CACHE
+
+> Task :compileJava
+/run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/src/main/java/me/jellysquid/mods/lithium/mixin/world/safety/ServerWorldSafetyMixin.java:20: warning: Cannot find target method "getEntitiesByType(Lnet/minecraft/util/TypeFilter;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;" for @Inject.method="getEntitiesByType(Lnet/minecraft/util/TypeFilter;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;" in net.minecraft.server.world.ServerWorld
+    @Inject(method = "getEntitiesByType(Lnet/minecraft/util/TypeFilter;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At("HEAD"), cancellable = true)
+    ^
+/run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/src/main/java/me/jellysquid/mods/lithium/mixin/world/safety/ServerWorldSafetyMixin.java:29: warning: Cannot find target method "getEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;" for @Inject.method="getEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;" in net.minecraft.server.world.ServerWorld
+    @Inject(method = {"getEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", "method_8335", "m_45933_"}, at = @At("HEAD"), cancellable = true, remap = false, require = 0, expect = 0)
+    ^
+/run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/src/main/java/me/jellysquid/mods/lithium/mixin/world/safety/ClientWorldSafetyMixin.java:19: warning: Cannot find target method "getEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;" for @Inject.method="getEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;" in net.minecraft.client.world.ClientWorld
+    @Inject(method = {"getEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", "method_8335", "m_45933_"}, at = @At("HEAD"), cancellable = true, remap = false, require = 0, expect = 0)
+    ^
+/run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/src/main/java/me/jellysquid/mods/lithium/mixin/experimental/chunk_tickets/ChunkTicketManagerMixin.java:44: warning: Unable to determine descriptor for @Redirect target method
+    @Redirect(method = "getTickets", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/collection/SortedArraySet;create(I)Lnet/minecraft/util/collection/SortedArraySet;", remap = false))
+    ^
+/run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/src/main/java/me/jellysquid/mods/lithium/mixin/ai/poi/tasks/HideInHomeTaskMixin.java:21: warning: Unable to determine descriptor for @Redirect target method
+        @Redirect(method = "start", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/poi/PointOfInterestStorage;getPosition(Ljava/util/function/Predicate;Ljava/util/function/Predicate;Lnet/minecraft/world/poi/PointOfInterestStorage$OccupationStatus;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/util/math/random/Random;)Ljava/util/Optional;", remap = false))
+        ^
+/run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/src/main/java/me/jellysquid/mods/lithium/mixin/ai/poi/tasks/HideInHomeTaskMixin.java:31: warning: Unable to determine descriptor for @Redirect target method
+        @Redirect(method = "start", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/poi/PointOfInterestStorage;getPosition(Ljava/util/function/Predicate;Ljava/util/function/Predicate;Lnet/minecraft/world/poi/PointOfInterestStorage$OccupationStatus;)Ljava/util/Optional;"))
+        ^
+/run/media/asephs/b147e4d3-826a-5c47-9a73-5b2b9a19cd71/radium-upstream/src/main/java/me/jellysquid/mods/lithium/mixin/ai/nearby_entity_tracking/ServerEntityManagerListenerMixin.java:28: warning: Cannot find target for @Shadow field in net.minecraft.server.world.ServerEntityManager$Listener
+        @Shadow(remap = false)
+        ^
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+7 warnings
+
 > Task :processResources
 > Task :classes
 > Task :jar
@@ -16,9 +44,9 @@ Architectury Loom: 1.10.437
 > Task :apiJar
 > Task :processTestResources NO-SOURCE
 > Task :testClasses UP-TO-DATE
-> Task :test FROM-CACHE
+> Task :test
 > Task :validateAccessWidener UP-TO-DATE
-> Task :check UP-TO-DATE
+> Task :check
 > Task :remapApiJar
 > Task :remapJar
 > Task :remapSourcesJar SKIPPED
@@ -31,5 +59,5 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 1s
-12 actionable tasks: 7 executed, 4 from cache, 1 up-to-date
+BUILD SUCCESSFUL in 2s
+12 actionable tasks: 9 executed, 2 from cache, 1 up-to-date
