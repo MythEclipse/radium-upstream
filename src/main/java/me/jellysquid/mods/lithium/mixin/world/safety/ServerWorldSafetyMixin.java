@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 public class ServerWorldSafetyMixin {
     private static boolean loggedApplication = false;
 
-    @Inject(method = "getEntitiesByType(Lnet/minecraft/util/TypeFilter;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At("HEAD"), cancellable = true, require = 0)
+    @Inject(method = "getEntitiesByType", at = @At("HEAD"), cancellable = true, require = 0)
     private void guardGetEntitiesByType(TypeFilter<Entity, ?> filter, Box box, Predicate<? super Entity> predicate,
             CallbackInfoReturnable<List<?>> cir) {
         if (!loggedApplication) {
@@ -31,7 +31,7 @@ public class ServerWorldSafetyMixin {
         }
     }
 
-    @Inject(method = "getEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At("HEAD"), cancellable = true, require = 0)
+    @Inject(method = "getEntities", at = @At("HEAD"), cancellable = true, require = 0)
     private void guardGetEntities(Entity except, Box box, Predicate<? super Entity> predicate,
             CallbackInfoReturnable<List<Entity>> cir) {
         if (!LithiumEntityCollisions.isBoxFinite(box)) {

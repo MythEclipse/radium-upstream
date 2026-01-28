@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 public class WorldSafetyMixin {
     private static boolean loggedApplication = false;
 
-    @Inject(method = "getEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At("HEAD"), cancellable = true, require = 0)
+    @Inject(method = "getEntities", at = @At("HEAD"), cancellable = true, require = 0)
     private void guardGetEntities(Entity except, Box box, Predicate<? super Entity> predicate,
             CallbackInfoReturnable<List<Entity>> cir) {
         if (!loggedApplication) {
