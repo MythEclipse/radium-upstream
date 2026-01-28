@@ -18,11 +18,14 @@ public class SectionedItemEntityMovementTracker<S extends Entity> extends Sectio
         super(worldSectionBox, clazz);
     }
 
-    public static <S extends Entity> SectionedItemEntityMovementTracker<S> registerAt(ServerWorld world, Box encompassingBox, Class<S> clazz) {
-        MovementTrackerCache cache = (MovementTrackerCache) ((ServerEntityManagerAccessor<?>) ((ServerWorldAccessor) world).getEntityManager()).getCache();
+    public static <S extends Entity> SectionedItemEntityMovementTracker<S> registerAt(ServerWorld world,
+            Box encompassingBox, Class<S> clazz) {
+        MovementTrackerCache cache = (MovementTrackerCache) ((ServerEntityManagerAccessor<?>) ((ServerWorldAccessor) world)
+                .getEntityManager()).getCache();
 
         WorldSectionBox worldSectionBox = WorldSectionBox.entityAccessBox(world, encompassingBox);
-        SectionedItemEntityMovementTracker<S> tracker = new SectionedItemEntityMovementTracker<>(worldSectionBox, clazz);
+        SectionedItemEntityMovementTracker<S> tracker = new SectionedItemEntityMovementTracker<>(worldSectionBox,
+                clazz);
         tracker = cache.deduplicate(tracker);
 
         tracker.register(world);
@@ -30,24 +33,31 @@ public class SectionedItemEntityMovementTracker<S extends Entity> extends Sectio
     }
 
     public List<S> getEntities(Box[] areas) {
+        if (!me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions.isBoxFinite(areas[areas.length - 1])) {
+            return java.util.Collections.emptyList();
+        }
         int numBoxes = areas.length - 1;
         BucketedList<S> entities = new BucketedList<>(numBoxes);
         Box encompassingBox = areas[numBoxes];
         for (int sectionIndex = 0; sectionIndex < this.sortedSections.size(); sectionIndex++) {
             if (this.sectionVisible[sectionIndex]) {
-                //noinspection unchecked
-                TypeFilterableList<S> collection = ((EntityTrackingSectionAccessor<S>) this.sortedSections.get(sectionIndex)).getCollection();
+                // noinspection unchecked
+                TypeFilterableList<S> collection = ((EntityTrackingSectionAccessor<S>) this.sortedSections
+                        .get(sectionIndex)).getCollection();
 
                 for (S entity : collection.getAllOfType(this.clazz)) {
                     if (entity.isAlive()) {
                         Box entityBoundingBox = entity.getBoundingBox();
-                        //even though there are usually only two boxes to check, checking the encompassing box only will be faster in most cases
-                        //In vanilla the number of boxes checked is always 2. Here it is 1 (miss) and 2-3 (hit)
+                        // even though there are usually only two boxes to check, checking the
+                        // encompassing box only will be faster in most cases
+                        // In vanilla the number of boxes checked is always 2. Here it is 1 (miss) and
+                        // 2-3 (hit)
                         if (entityBoundingBox.intersects(encompassingBox)) {
                             for (int j = 0; j < numBoxes; j++) {
                                 if (entityBoundingBox.intersects(areas[j])) {
                                     entities.addToBucket(j, entity);
-                                    //Only add each entity once. A hopper cannot pick up from the entity twice anyways.
+                                    // Only add each entity once. A hopper cannot pick up from the entity twice
+                                    // anyways.
                                     break;
                                 }
                             }
