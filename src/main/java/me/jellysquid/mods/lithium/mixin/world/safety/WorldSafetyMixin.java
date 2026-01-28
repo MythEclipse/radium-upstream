@@ -12,10 +12,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
-@Mixin(World.class)
+@Mixin(value = World.class, priority = 2000)
 public class WorldSafetyMixin {
     @Inject(method = "getOtherEntities", at = @At("HEAD"), cancellable = true)
     private void guardGetOtherEntities(Entity except, Box box, Predicate<? super Entity> predicate, CallbackInfoReturnable<List<Entity>> cir) {
+        if (!LithiumEntityCollisions.isBoxFinite(box)) {
+            cir.setReturnValue(Collections.emptyList());
+        }
+    }
+
+    @Inject(method = {"getEntities", "method_8335", "m_45933_"}, at = @At("HEAD"), cancellable = true, remap = false, require = 0, expect = 0)
+    private void guardGetEntities(Entity except, Box box, Predicate<? super Entity> predicate, CallbackInfoReturnable<List<Entity>> cir) {
         if (!LithiumEntityCollisions.isBoxFinite(box)) {
             cir.setReturnValue(Collections.emptyList());
         }

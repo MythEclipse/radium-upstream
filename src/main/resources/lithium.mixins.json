@@ -231,8 +231,5 @@
     "world.tick_scheduler.ChunkTickSchedulerMixin",
     "world.safety.WorldSafetyMixin"
   ],
-  "client": [
-    "chunk.entity_class_groups.ClientEntityManagerAccessor",
-    "chunk.entity_class_groups.ClientWorldMixin"
-  ]
+  "client": ["chunk.entity_class_groups.ClientEntityManagerAccessor", "chunk.entity_class_groups.ClientWorldMixin"]
 }
