@@ -24,35 +24,22 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
         // Force enable safety mixins for VS2 compatibility (keep these as a fallback)
         config.getOption("mixin.world.safety").addModOverride(true, "radium");
 
-        boolean vsPresent = false;
-        try {
-            Class.forName("org.valkyrienskies.core.api.Ship");
-            vsPresent = true;
-        } catch (ClassNotFoundException ignored) {
-            try {
-                Class.forName("org.valkyrienskies.mod.common.ValkyrieSkiesMod");
-                vsPresent = true;
-            } catch (ClassNotFoundException ignored2) {
-                vsPresent = LoadingModList.get().getModFileById("valkyrienskies") != null
-                        || LoadingModList.get().getModFileById("valkyrien_skies") != null;
-            }
-        }
+        // Unconditionally disable conflicting mixins as per user request to ensure
+        // compatibility
+        // We do not rely on detection here because it has proven flaky in the user's
+        // setup.
+        config.getOption("mixin.ai.poi").addModOverride(false, "radium_vs2_compat");
+        config.getOption("mixin.ai.poi.fast_portals").addModOverride(false, "radium_vs2_compat");
+        config.getOption("mixin.ai.poi.tasks").addModOverride(false, "radium_vs2_compat");
+        config.getOption("mixin.world.block_entity_ticking.world_border").addModOverride(false, "radium_vs2_compat");
 
-        if (vsPresent) {
-            config.getOption("mixin.ai.poi").addModOverride(false, "valkyrienskies");
-            config.getOption("mixin.ai.poi.fast_portals").addModOverride(false, "valkyrienskies");
-            config.getOption("mixin.ai.poi.tasks").addModOverride(false, "valkyrienskies");
-            config.getOption("mixin.world.block_entity_ticking.world_border").addModOverride(false, "valkyrienskies");
+        // AGGRESSIVE COMPATIBILITY: Disable all possible conflict sources
+        config.getOption("mixin.block.hopper").addModOverride(false, "radium_vs2_compat");
+        config.getOption("mixin.entity.hopper_minecart").addModOverride(false, "radium_vs2_compat");
+        config.getOption("mixin.entity.collisions").addModOverride(false, "radium_vs2_compat");
+        config.getOption("mixin.ai.nearby_entity_tracking").addModOverride(false, "radium_vs2_compat");
 
-            // AGGRESSIVE COMPATIBILITY: Disable all possible conflict sources
-            config.getOption("mixin.block.hopper").addModOverride(false, "valkyrienskies");
-            config.getOption("mixin.entity.hopper_minecart").addModOverride(false, "valkyrienskies");
-            config.getOption("mixin.entity.collisions").addModOverride(false, "valkyrienskies");
-            config.getOption("mixin.ai.nearby_entity_tracking").addModOverride(false, "valkyrienskies");
-
-            System.err.println(
-                    "[Radium] Valkyrie Skies detected! Disabling Hopper, Collision, and Tracking optimizations.");
-        }
+        System.err.println("[Radium] VS2 Compatibility Mode Enforced: Disabling all conflicting optimizations.");
 
         Option option = config.getOption("mixin.block.hopper.worldedit_compat");
         if (!option.isEnabled() && WorldEditCompat.WORLD_EDIT_PRESENT) {

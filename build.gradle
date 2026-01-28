@@ -14,7 +14,7 @@ plugins {
     id 'org.ajoberstar.grgit' version '5.0.0'
 
     // Mixin config plugin is a subproject for creating lithium's settings from annotations in each mixin package.
-    // id 'net.caffeinemc.mixin-config-plugin' version '1.0-SNAPSHOT'
+    id 'net.caffeinemc.mixin-config-plugin' version '1.0-SNAPSHOT'
 
     id 'maven-publish'
 }
@@ -22,7 +22,7 @@ plugins {
 apply from: "${rootProject.projectDir}/gradle/fabric.gradle"
 apply from: "${rootProject.projectDir}/gradle/java.gradle"
 
-// apply plugin: 'net.caffeinemc.mixin-config-plugin'
+apply plugin: 'net.caffeinemc.mixin-config-plugin'
 
 loom {
     accessWidenerPath = file("src/main/resources/lithium.accesswidener")
@@ -101,12 +101,30 @@ loom {
 }
 
 repositories {
+    flatDir { dirs 'libs' }
     allprojects {
         repositories {
+            flatDir { dirs 'libs' }
             maven { url 'https://jitpack.io' }
             maven { url "https://maven.su5ed.dev/releases" }
             maven { url "https://repo.constructlegacy.ru/public" }
             maven { url "https://maven.caffeinemc.net/" }
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+                content {
+                    includeGroup "maven.modrinth"
+                }
+            }
+            maven {
+                name = "Valkyrien Skies Internal"
+                url = "https://maven.valkyrienskies.org"
+            }
+            maven {
+                name = "RealRobotix"
+                url = "https://maven.realrobotix.me/master/"
+            }
+            mavenCentral()
         }
     }
 }
@@ -118,6 +136,27 @@ dependencies {
 
     forge "net.minecraftforge:forge:${project.loader_version}"
     modCompileOnly "dev.su5ed.sinytra.fabric-api:fabric-transfer-api-v1:${project.fabric_version}" // Ye
+
+    // VS2 (Fat Jar with API merged)
+    // modImplementation name: 'vs2-fat'
+    
+    // Core internal/impl/util still needed if not merged? 
+    // Assuming vs2-lat.jar only has API + Main Mod.
+    // The main mod likely depends on impl/util at runtime.
+    // Let's keep them as modImplementation for safety, or implementation.
+    // But since vs2-fat is a "mod", it might work better.
+    // modImplementation name: 'internal-fixed'
+    // modImplementation name: 'util-fixed'
+    // modImplementation name: 'impl-fixed'
+    
+    modImplementation "maven.modrinth:kotlin-for-forge:4.11.0"
+
+    // C2ME (Using direct Version ID from Modrinth)
+    modImplementation "maven.modrinth:c2me-fabric:s4WOiNtz"
+
+    // MixinExtras (Required by VS2)
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.5"))
+    implementation("io.github.llamalad7:mixinextras-forge:0.3.5")
 
     // Inlined implementation in me.jellysquid.mods.lithium.common.config.caffeine
 }
@@ -186,5 +225,14 @@ publishing {
                 password = System.getenv("MAVEN_PASSWORD")
             }
         }
+    }
+}
+
+task printClasspath {
+    doLast {
+        println "Runtime Classpath:"
+        sourceSets.main.runtimeClasspath.each { println it }
+        println "Compile Classpath:"
+        sourceSets.main.compileClasspath.each { println it }
     }
 }
