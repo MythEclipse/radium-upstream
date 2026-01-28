@@ -43,8 +43,13 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
             config.getOption("mixin.ai.poi.fast_portals").addModOverride(false, "valkyrienskies");
             config.getOption("mixin.ai.poi.tasks").addModOverride(false, "valkyrienskies");
             config.getOption("mixin.world.block_entity_ticking.world_border").addModOverride(false, "valkyrienskies");
+
+            // Disable Hopper optimizations to fix "Collision box is too big" error with VS2
+            config.getOption("mixin.block.hopper").addModOverride(false, "valkyrienskies");
+            config.getOption("mixin.entity.hopper_minecart").addModOverride(false, "valkyrienskies");
+
             System.err.println(
-                    "[Radium] Valkyrie Skies detected! Automatically disabling conflicting status/POI optimizations.");
+                    "[Radium] Valkyrie Skies detected! Automatically disabling conflicting status/POI and Hopper optimizations.");
         }
 
         Option option = config.getOption("mixin.block.hopper.worldedit_compat");
