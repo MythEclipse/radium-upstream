@@ -1,5 +1,7 @@
 package me.jellysquid.mods.lithium.mixin.entity.replace_entitytype_predicates;
 
+import me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
@@ -19,16 +21,14 @@ public abstract class ItemFrameEntityMixin extends AbstractDecorationEntity {
         super(entityType_1, world_1);
     }
 
-    @Redirect(
-            method = "canStayAttached()Z",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;"
-            )
-    )
-    private List<Entity> getAbstractDecorationEntities(World world, Entity excluded, Box box, Predicate<? super Entity> predicate) {
+    @Redirect(method = "canStayAttached()Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;"))
+    private List<Entity> getAbstractDecorationEntities(World world, Entity excluded, Box box,
+            Predicate<? super Entity> predicate) {
+        if (!LithiumEntityCollisions.isBoxFinite(box)) {
+            return java.util.Collections.emptyList();
+        }
         if (predicate == PREDICATE) {
-            //noinspection unchecked,rawtypes
+            // noinspection unchecked,rawtypes
             return (List) world.getEntitiesByClass(AbstractDecorationEntity.class, box, entity -> entity != excluded);
 
         }

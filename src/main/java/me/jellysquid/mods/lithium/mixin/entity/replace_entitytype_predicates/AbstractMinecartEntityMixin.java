@@ -1,5 +1,7 @@
 package me.jellysquid.mods.lithium.mixin.entity.replace_entitytype_predicates;
 
+import me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.util.math.Box;
@@ -13,14 +15,11 @@ import java.util.List;
 @Mixin(AbstractMinecartEntity.class)
 public class AbstractMinecartEntityMixin {
 
-    @Redirect(
-            method = "tick()V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;)Ljava/util/List;"
-            )
-    )
+    @Redirect(method = "tick()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;)Ljava/util/List;"))
     private List<AbstractMinecartEntity> getOtherAbstractMinecarts(World world, Entity except, Box box) {
+        if (!LithiumEntityCollisions.isBoxFinite(box)) {
+            return java.util.Collections.emptyList();
+        }
         return world.getEntitiesByClass(AbstractMinecartEntity.class, box, entity -> entity != except);
     }
 }

@@ -1,5 +1,6 @@
 package me.jellysquid.mods.lithium.mixin.entity.hopper_minecart;
 
+import me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions;
 import me.jellysquid.mods.lithium.common.hopper.HopperHelper;
 import me.jellysquid.mods.lithium.common.util.collections.BucketedList;
 import net.minecraft.block.entity.Hopper;
@@ -20,8 +21,9 @@ public class HopperBlockEntityMixin {
     /**
      * @author 2No2Name
      * @reason avoid checking 5 boxes
-     * <p>
-     * This code is run by hopper minecarts. Hopper blocks use a different optimization unless it is disabled.
+     *         <p>
+     *         This code is run by hopper minecarts. Hopper blocks use a different
+     *         optimization unless it is disabled.
      */
     @Overwrite
     public static List<ItemEntity> getInputItemEntities(World world, Hopper hopper) {
@@ -29,7 +31,12 @@ public class HopperBlockEntityMixin {
         double xOffset = hopper.getHopperX() - 0.5;
         double yOffset = hopper.getHopperY() - 0.5;
         double zOffset = hopper.getHopperZ() - 0.5;
-        List<ItemEntity> nearbyEntities = world.getEntitiesByClass(ItemEntity.class, encompassingBox.offset(xOffset, yOffset, zOffset), EntityPredicates.VALID_ENTITY);
+        Box targetBox = encompassingBox.offset(xOffset, yOffset, zOffset);
+        if (!LithiumEntityCollisions.isBoxFinite(targetBox)) {
+            return Collections.emptyList();
+        }
+        List<ItemEntity> nearbyEntities = world.getEntitiesByClass(ItemEntity.class, targetBox,
+                EntityPredicates.VALID_ENTITY);
 
         if (nearbyEntities.isEmpty()) {
             return Collections.emptyList();
@@ -49,7 +56,8 @@ public class HopperBlockEntityMixin {
             for (int j = 0; j < numBoxes; j++) {
                 if (entityBoundingBox.intersects(offsetBoundingBoxes[j])) {
                     entities.addToBucket(j, itemEntity);
-                    //Only add each entity once. A hopper cannot pick up from the entity twice anyways.
+                    // Only add each entity once. A hopper cannot pick up from the entity twice
+                    // anyways.
                     break;
                 }
             }

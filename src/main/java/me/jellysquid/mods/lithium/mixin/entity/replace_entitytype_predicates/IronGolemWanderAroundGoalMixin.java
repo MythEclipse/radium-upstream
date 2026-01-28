@@ -1,5 +1,7 @@
 package me.jellysquid.mods.lithium.mixin.entity.replace_entitytype_predicates;
 
+import me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.IronGolemWanderAroundGoal;
@@ -26,17 +28,18 @@ public abstract class IronGolemWanderAroundGoalMixin extends WanderAroundGoal {
     @Shadow
     protected abstract boolean canVillagerSummonGolem(VillagerEntity villager);
 
-    @Redirect(
-            method = "findVillagerPos",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/server/world/ServerWorld;getEntitiesByType(Lnet/minecraft/util/TypeFilter;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;"
-            )
-    )
-    private List<VillagerEntity> getEntities(ServerWorld serverWorld, TypeFilter<Entity, VillagerEntity> filter, Box box, Predicate<? super VillagerEntity> predicate) {
-        if (filter == EntityType.VILLAGER) {
-            return serverWorld.getEntitiesByClass(VillagerEntity.class, this.mob.getBoundingBox().expand(32.0), this::canVillagerSummonGolem);
+    @Redirect(method = "findVillagerPos", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getEntitiesByType(Lnet/minecraft/util/TypeFilter;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;"))
+    private List<VillagerEntity> getEntities(ServerWorld serverWorld, TypeFilter<Entity, VillagerEntity> filter,
+            Box box, Predicate<? super VillagerEntity> predicate) {
+        if (!LithiumEntityCollisions.isBoxFinite(box)
+                || !LithiumEntityCollisions.isBoxFinite(this.mob.getBoundingBox())) {
+            return java.util.Collections.emptyList();
         }
-        return serverWorld.getEntitiesByType(EntityType.VILLAGER, this.mob.getBoundingBox().expand(32.0), this::canVillagerSummonGolem);
+        if (filter == EntityType.VILLAGER) {
+            return serverWorld.getEntitiesByClass(VillagerEntity.class, this.mob.getBoundingBox().expand(32.0),
+                    this::canVillagerSummonGolem);
+        }
+        return serverWorld.getEntitiesByType(EntityType.VILLAGER, this.mob.getBoundingBox().expand(32.0),
+                this::canVillagerSummonGolem);
     }
 }

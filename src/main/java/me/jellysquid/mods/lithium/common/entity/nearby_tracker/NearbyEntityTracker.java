@@ -14,7 +14,8 @@ import net.minecraft.util.math.Vec3i;
 import java.util.List;
 
 /**
- * Maintains a collection of all entities within the range of this listener. This allows AI goals to quickly
+ * Maintains a collection of all entities within the range of this listener.
+ * This allows AI goals to quickly
  * assess nearby entities which match the provided class.
  */
 public class NearbyEntityTracker<T extends LivingEntity> implements NearbyEntityListener {
@@ -34,8 +35,7 @@ public class NearbyEntityTracker<T extends LivingEntity> implements NearbyEntity
                 1 + ChunkSectionPos.getSectionCoord(boxRadius.getZ()),
                 1 + ChunkSectionPos.getSectionCoord(boxRadius.getX()),
                 1 + ChunkSectionPos.getSectionCoord(boxRadius.getY()),
-                1 + ChunkSectionPos.getSectionCoord(boxRadius.getZ())
-        );
+                1 + ChunkSectionPos.getSectionCoord(boxRadius.getZ()));
     }
 
     @Override
@@ -68,28 +68,32 @@ public class NearbyEntityTracker<T extends LivingEntity> implements NearbyEntity
     }
 
     /**
-     * Gets the closest T (extends LivingEntity) to the center of this tracker that also intersects with the given box and meets the
+     * Gets the closest T (extends LivingEntity) to the center of this tracker that
+     * also intersects with the given box and meets the
      * requirements of the targetPredicate.
-     * The result may be different from vanilla if there are multiple closest entities.
+     * The result may be different from vanilla if there are multiple closest
+     * entities.
      *
      * @param box             the box the entities have to intersect
      * @param targetPredicate predicate the entity has to meet
      * @param x
      * @param y
      * @param z
-     * @return the closest Entity that meets all requirements (distance, box intersection, predicate, type T)
+     * @return the closest Entity that meets all requirements (distance, box
+     *         intersection, predicate, type T)
      */
     public T getClosestEntity(Box box, TargetPredicate targetPredicate, double x, double y, double z) {
+        if (box != null && !me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions.isBoxFinite(box)) {
+            return null;
+        }
         T nearest = null;
         double nearestDistance = Double.POSITIVE_INFINITY;
 
         for (T entity : this.nearbyEntities.keySet()) {
             double distance;
-            if (
-                    (box == null || box.intersects(entity.getBoundingBox())) &&
-                            (distance = entity.squaredDistanceTo(x, y, z)) <= nearestDistance &&
-                            targetPredicate.test(this.getEntity(), entity)
-            ) {
+            if ((box == null || box.intersects(entity.getBoundingBox())) &&
+                    (distance = entity.squaredDistanceTo(x, y, z)) <= nearestDistance &&
+                    targetPredicate.test(this.getEntity(), entity)) {
                 if (distance == nearestDistance) {
                     nearest = this.getFirst(nearest, entity);
                 } else {
@@ -104,19 +108,24 @@ public class NearbyEntityTracker<T extends LivingEntity> implements NearbyEntity
 
     /**
      * Gets the Entity that is processed first in vanilla.
+     * 
      * @param entity1 one Entity
      * @param entity2 the other Entity
      * @return the Entity that is first in vanilla
      */
     private T getFirst(T entity1, T entity2) {
         if (this.getEntityClass() == PlayerEntity.class) {
-            //Get first in player list
+            // Get first in player list
             List<? extends PlayerEntity> players = this.getEntity().getEntityWorld().getPlayers();
-            return players.indexOf((PlayerEntity)entity1) < players.indexOf((PlayerEntity)entity2) ? entity1 : entity2;
+            return players.indexOf((PlayerEntity) entity1) < players.indexOf((PlayerEntity) entity2) ? entity1
+                    : entity2;
         } else {
-            //Get first sorted by chunk section pos as long, then sorted by first added to the chunk section
-            //First added to this tracker and first added to the chunk section is equivalent here, because
-            //this tracker always tracks complete sections and the entities are added in order
+            // Get first sorted by chunk section pos as long, then sorted by first added to
+            // the chunk section
+            // First added to this tracker and first added to the chunk section is
+            // equivalent here, because
+            // this tracker always tracks complete sections and the entities are added in
+            // order
             long pos1 = ChunkSectionPos.toLong(entity1.getBlockPos());
             long pos2 = ChunkSectionPos.toLong(entity2.getBlockPos());
             if (pos1 < pos2) {
@@ -136,7 +145,8 @@ public class NearbyEntityTracker<T extends LivingEntity> implements NearbyEntity
 
     @Override
     public String toString() {
-        return super.toString() + " for entity class: " + this.clazz.getName() + ", around entity: " + this.getEntity().toString() + " with NBT: " + this.getEntity().writeNbt(new NbtCompound());
+        return super.toString() + " for entity class: " + this.clazz.getName() + ", around entity: "
+                + this.getEntity().toString() + " with NBT: " + this.getEntity().writeNbt(new NbtCompound());
     }
 
     LivingEntity getEntity() {

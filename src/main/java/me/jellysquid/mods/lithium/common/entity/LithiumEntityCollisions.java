@@ -47,6 +47,9 @@ public class LithiumEntityCollisions {
      *         blocks
      */
     public static boolean doesBoxCollideWithBlocks(World world, Entity entity, Box box) {
+        if (!isBoxFinite(box)) {
+            return false;
+        }
         final ChunkAwareBlockCollisionSweeper sweeper = new ChunkAwareBlockCollisionSweeper(world, entity, box);
 
         final VoxelShape shape = sweeper.computeNext();
@@ -192,6 +195,9 @@ public class LithiumEntityCollisions {
     }
 
     public static boolean doesEntityCollideWithWorldBorder(CollisionView collisionView, Entity entity) {
+        if (!isBoxFinite(entity.getBoundingBox())) {
+            return false;
+        }
         if (isWithinWorldBorder(collisionView.getWorldBorder(), entity.getBoundingBox())) {
             return false;
         } else {
@@ -203,6 +209,9 @@ public class LithiumEntityCollisions {
 
     public static VoxelShape getWorldBorderCollision(CollisionView collisionView, Entity entity) {
         Box box = entity.getBoundingBox();
+        if (!isBoxFinite(box)) {
+            return VoxelShapes.empty();
+        }
         WorldBorder worldBorder = collisionView.getWorldBorder();
         return worldBorder.canCollide(entity, box) ? worldBorder.asVoxelShape() : null;
     }
