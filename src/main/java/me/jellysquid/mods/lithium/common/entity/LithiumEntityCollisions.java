@@ -39,6 +39,9 @@ public class LithiumEntityCollisions {
      * VoxelShape system.
      */
     public static List<VoxelShape> getBlockCollisions(World world, Entity entity, Box box) {
+        if (!isBoxFinite(box)) {
+            return Collections.emptyList();
+        }
         return new ChunkAwareBlockCollisionSweeper(world, entity, box).collectAll();
     }
 
@@ -217,6 +220,9 @@ public class LithiumEntityCollisions {
     }
 
     public static VoxelShape getCollisionShapeBelowEntity(World world, @Nullable Entity entity, Box entityBoundingBox) {
+        if (!isBoxFinite(entityBoundingBox)) {
+            return null;
+        }
         int x = MathHelper.floor(entityBoundingBox.minX + (entityBoundingBox.maxX - entityBoundingBox.minX) / 2);
         int y = MathHelper.floor(entityBoundingBox.minY);
         int z = MathHelper.floor(entityBoundingBox.minZ + (entityBoundingBox.maxZ - entityBoundingBox.minZ) / 2);
