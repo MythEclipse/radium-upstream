@@ -21,7 +21,7 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
             config.getOption("mixin.alloc.blockstate").addModOverride(false, "ferritecore");
         }
 
-        // Force enable safety mixins for VS2 compatibility
+        // Force enable safety mixins for VS2 compatibility (keep these as a fallback)
         config.getOption("mixin.world.safety").addModOverride(true, "radium");
 
         boolean vsPresent = false;
@@ -44,12 +44,14 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
             config.getOption("mixin.ai.poi.tasks").addModOverride(false, "valkyrienskies");
             config.getOption("mixin.world.block_entity_ticking.world_border").addModOverride(false, "valkyrienskies");
 
-            // Disable Hopper optimizations to fix "Collision box is too big" error with VS2
+            // AGGRESSIVE COMPATIBILITY: Disable all possible conflict sources
             config.getOption("mixin.block.hopper").addModOverride(false, "valkyrienskies");
             config.getOption("mixin.entity.hopper_minecart").addModOverride(false, "valkyrienskies");
+            config.getOption("mixin.entity.collisions").addModOverride(false, "valkyrienskies");
+            config.getOption("mixin.ai.nearby_entity_tracking").addModOverride(false, "valkyrienskies");
 
             System.err.println(
-                    "[Radium] Valkyrie Skies detected! Automatically disabling conflicting status/POI and Hopper optimizations.");
+                    "[Radium] Valkyrie Skies detected! Disabling Hopper, Collision, and Tracking optimizations.");
         }
 
         Option option = config.getOption("mixin.block.hopper.worldedit_compat");
