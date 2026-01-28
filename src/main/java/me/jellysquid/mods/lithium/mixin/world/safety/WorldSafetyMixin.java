@@ -20,11 +20,4 @@ public class WorldSafetyMixin {
             cir.setReturnValue(Collections.emptyList());
         }
     }
-
-    @Inject(method = "getEntities", at = @At("HEAD"), cancellable = true)
-    private void guardGetEntities(Entity except, Box box, Predicate<? super Entity> predicate, CallbackInfoReturnable<List<Entity>> cir) {
-        if (!LithiumEntityCollisions.isBoxFinite(box)) {
-            cir.setReturnValue(Collections.emptyList());
-        }
-    }
 }
