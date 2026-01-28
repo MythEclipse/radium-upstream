@@ -32,8 +32,10 @@ public class LithiumEntityCollisions {
 
     /**
      * [VanillaCopy] CollisionView#getBlockCollisions(Entity, Box)
-     * This is a much, much faster implementation which uses simple collision testing against full-cube block shapes.
-     * Checks against the world border are replaced with our own optimized functions which do not go through the
+     * This is a much, much faster implementation which uses simple collision
+     * testing against full-cube block shapes.
+     * Checks against the world border are replaced with our own optimized functions
+     * which do not go through the
      * VoxelShape system.
      */
     public static List<VoxelShape> getBlockCollisions(World world, Entity entity, Box box) {
@@ -41,7 +43,8 @@ public class LithiumEntityCollisions {
     }
 
     /***
-     * @return True if the box (possibly that of an entity's) collided with any blocks
+     * @return True if the box (possibly that of an entity's) collided with any
+     *         blocks
      */
     public static boolean doesBoxCollideWithBlocks(World world, Entity entity, Box box) {
         final ChunkAwareBlockCollisionSweeper sweeper = new ChunkAwareBlockCollisionSweeper(world, entity, box);
@@ -52,10 +55,11 @@ public class LithiumEntityCollisions {
     }
 
     /**
-     * @return True if the box (possibly that of an entity's) collided with any other hard entities
+     * @return True if the box (possibly that of an entity's) collided with any
+     *         other hard entities
      */
     public static boolean doesBoxCollideWithHardEntities(EntityView view, Entity entity, Box box) {
-        if (isBoxEmpty(box)) {
+        if (isBoxEmpty(box) || !isBoxFinite(box)) {
             return false;
         }
 
@@ -65,12 +69,14 @@ public class LithiumEntityCollisions {
     /**
      * Iterates entity and world border collision boxes.
      */
-    public static List<VoxelShape> getEntityWorldBorderCollisions(World world, Entity entity, Box box, boolean includeWorldBorder) {
-        if (isBoxEmpty(box)) {
+    public static List<VoxelShape> getEntityWorldBorderCollisions(World world, Entity entity, Box box,
+            boolean includeWorldBorder) {
+        if (isBoxEmpty(box) || !isBoxFinite(box)) {
             return Collections.emptyList();
         }
         ArrayList<VoxelShape> shapes = new ArrayList<>();
-        Iterable<VoxelShape> collisions = getEntityWorldBorderCollisionIterable(world, entity, box.expand(EPSILON), includeWorldBorder);
+        Iterable<VoxelShape> collisions = getEntityWorldBorderCollisionIterable(world, entity, box.expand(EPSILON),
+                includeWorldBorder);
         for (VoxelShape shape : collisions) {
             shapes.add(shape);
         }
@@ -79,10 +85,13 @@ public class LithiumEntityCollisions {
 
     /**
      * [VanillaCopy] EntityView#getEntityCollisions
-     * Re-implements the function named above without stream code or unnecessary allocations. This can provide a small
-     * boost in some situations (such as heavy entity crowding) and reduces the allocation rate significantly.
+     * Re-implements the function named above without stream code or unnecessary
+     * allocations. This can provide a small
+     * boost in some situations (such as heavy entity crowding) and reduces the
+     * allocation rate significantly.
      */
-    public static Iterable<VoxelShape> getEntityWorldBorderCollisionIterable(EntityView view, Entity entity, Box box, boolean includeWorldBorder) {
+    public static Iterable<VoxelShape> getEntityWorldBorderCollisionIterable(EntityView view, Entity entity, Box box,
+            boolean includeWorldBorder) {
         assert !includeWorldBorder || entity != null;
         return new Iterable<>() {
             private List<Entity> entityList;
@@ -97,11 +106,13 @@ public class LithiumEntityCollisions {
 
                     @Override
                     protected VoxelShape computeNext() {
-                        //Initialize list that is shared between multiple iterators as late as possible
+                        // Initialize list that is shared between multiple iterators as late as possible
                         if (entityList == null) {
                             /*
-                             * In case entity's class is overriding Entity#collidesWith(Entity), all types of entities may be (=> are assumed to be) required.
-                             * Otherwise only get entities that override Entity#isCollidable(), as other entities cannot collide.
+                             * In case entity's class is overriding Entity#collidesWith(Entity), all types
+                             * of entities may be (=> are assumed to be) required.
+                             * Otherwise only get entities that override Entity#isCollidable(), as other
+                             * entities cannot collide.
                              */
                             entityList = WorldHelper.getEntitiesForCollision(view, box, entity);
                             nextFilterIndex = 0;
@@ -110,11 +121,12 @@ public class LithiumEntityCollisions {
                         Entity otherEntity;
                         do {
                             if (this.index >= list.size()) {
-                                //get the world border at the end
+                                // get the world border at the end
                                 if (includeWorldBorder && !this.consumedWorldBorder) {
                                     this.consumedWorldBorder = true;
                                     WorldBorder worldBorder = entity.getWorld().getWorldBorder();
-                                    if (!isWithinWorldBorder(worldBorder, box) && isWithinWorldBorder(worldBorder, entity.getBoundingBox())) {
+                                    if (!isWithinWorldBorder(worldBorder, box)
+                                            && isWithinWorldBorder(worldBorder, entity.getBoundingBox())) {
                                         return worldBorder.asVoxelShape();
                                     }
                                 }
@@ -124,10 +136,12 @@ public class LithiumEntityCollisions {
                             otherEntity = list.get(this.index);
                             if (this.index >= nextFilterIndex) {
                                 /*
-                                 * {@link Entity#isCollidable()} returns false by default, designed to be overridden by
+                                 * {@link Entity#isCollidable()} returns false by default, designed to be
+                                 * overridden by
                                  * entities whose collisions should be "hard" (boats and shulkers, for now).
                                  *
-                                 * {@link Entity#collidesWith(Entity)} only allows hard collisions if the calling entity is not riding
+                                 * {@link Entity#collidesWith(Entity)} only allows hard collisions if the
+                                 * calling entity is not riding
                                  * otherEntity as a vehicle.
                                  */
                                 if (entity == null) {
@@ -150,10 +164,12 @@ public class LithiumEntityCollisions {
     }
 
     /**
-     * This provides a faster check for seeing if an entity is within the world border as it avoids going through
+     * This provides a faster check for seeing if an entity is within the world
+     * border as it avoids going through
      * the slower shape system.
      *
-     * @return True if the {@param box} is fully within the {@param border}, otherwise false.
+     * @return True if the {@param box} is fully within the {@param border},
+     *         otherwise false.
      */
     public static boolean isWithinWorldBorder(WorldBorder border, Box box) {
         double wboxMinX = Math.floor(border.getBoundWest());
@@ -166,9 +182,13 @@ public class LithiumEntityCollisions {
                 box.maxX >= wboxMinX && box.maxX <= wboxMaxX && box.maxZ >= wboxMinZ && box.maxZ <= wboxMaxZ;
     }
 
-
     private static boolean isBoxEmpty(Box box) {
         return box.getAverageSideLength() <= EPSILON;
+    }
+
+    public static boolean isBoxFinite(Box box) {
+        return Double.isFinite(box.minX) && Double.isFinite(box.minY) && Double.isFinite(box.minZ) &&
+                Double.isFinite(box.maxX) && Double.isFinite(box.maxY) && Double.isFinite(box.maxZ);
     }
 
     public static boolean doesEntityCollideWithWorldBorder(CollisionView collisionView, Entity entity) {
@@ -176,7 +196,8 @@ public class LithiumEntityCollisions {
             return false;
         } else {
             VoxelShape worldBorderShape = getWorldBorderCollision(collisionView, entity);
-            return worldBorderShape != null && VoxelShapes.matchesAnywhere(worldBorderShape, VoxelShapes.cuboid(entity.getBoundingBox()), BooleanBiFunction.AND);
+            return worldBorderShape != null && VoxelShapes.matchesAnywhere(worldBorderShape,
+                    VoxelShapes.cuboid(entity.getBoundingBox()), BooleanBiFunction.AND);
         }
     }
 
@@ -193,10 +214,12 @@ public class LithiumEntityCollisions {
         if (world.isOutOfHeightLimit(y)) {
             return null;
         }
-        Chunk chunk = world.getChunk(Pos.ChunkCoord.fromBlockCoord(x), Pos.ChunkCoord.fromBlockCoord(z), ChunkStatus.FULL, false);
+        Chunk chunk = world.getChunk(Pos.ChunkCoord.fromBlockCoord(x), Pos.ChunkCoord.fromBlockCoord(z),
+                ChunkStatus.FULL, false);
         if (chunk != null) {
             ChunkSection cachedChunkSection = chunk.getSectionArray()[Pos.SectionYIndex.fromBlockCoord(world, y)];
-            return cachedChunkSection.getBlockState(x & 15, y & 15, z & 15).getCollisionShape(world, new BlockPos(x, y, z), entity == null ? ShapeContext.absent() : ShapeContext.of(entity));
+            return cachedChunkSection.getBlockState(x & 15, y & 15, z & 15).getCollisionShape(world,
+                    new BlockPos(x, y, z), entity == null ? ShapeContext.absent() : ShapeContext.of(entity));
         }
         return null;
     }
