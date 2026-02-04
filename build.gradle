@@ -11,7 +11,7 @@ plugins {
 
     // This dependency is only used to determine the state of the Git working tree so that build artifacts can be
     // more easily identified. TODO: Lazily load GrGit via a service only when builds are performed.
-    id 'org.ajoberstar.grgit' version '5.0.0'
+    id 'org.ajoberstar.grgit' version '5.3.3'
 
     // Mixin config plugin is a subproject for creating lithium's settings from annotations in each mixin package.
     id 'net.caffeinemc.mixin-config-plugin' version '1.0-SNAPSHOT'
@@ -155,11 +155,11 @@ dependencies {
     modImplementation "maven.modrinth:c2me-fabric:s4WOiNtz"
 
     // MixinExtras (Required by VS2)
-    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.5"))
-    implementation("io.github.llamalad7:mixinextras-forge:0.3.5")
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.3"))
+    implementation("io.github.llamalad7:mixinextras-forge:0.5.3")
 
     // Inlined implementation in me.jellysquid.mods.lithium.common.config.caffeine
-    implementation("org.joml:joml:1.10.4") { transitive = false }
+    implementation("org.joml:joml:1.10.8") { transitive = false }
     implementation("org.joml:joml-primitives:1.10.0") { transitive = false }
 }
 
