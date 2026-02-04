@@ -14,8 +14,10 @@ import java.util.Arrays;
 import java.util.concurrent.locks.ReadWriteLock;
 
 /**
- * Optimizes the DataTracker to use a simple array-based storage for entries and avoids integer boxing. This reduces
- * a lot of the overhead associated with retrieving tracked data about an entity.
+ * Optimizes the DataTracker to use a simple array-based storage for entries and
+ * avoids integer boxing. This reduces
+ * a lot of the overhead associated with retrieving tracked data about an
+ * entity.
  */
 @Mixin(DataTracker.class)
 public abstract class DataTrackerMixin {
@@ -30,23 +32,19 @@ public abstract class DataTrackerMixin {
     @Final
     private Int2ObjectMap<DataTracker.Entry<?>> entries;
     /**
-     * Mirrors the vanilla backing entries map. Each DataTracker.Entry can be accessed in this array through its ID.
+     * Mirrors the vanilla backing entries map. Each DataTracker.Entry can be
+     * accessed in this array through its ID.
      **/
     private DataTracker.Entry<?>[] entriesArray = new DataTracker.Entry<?>[DEFAULT_ENTRY_COUNT];
 
     /**
-     * We redirect the call to add a tracked data to the internal map so we can add it to our new storage structure. This
-     * should only ever occur during entity initialization. Type-erasure is a bit of a pain here since we must redirect
+     * We redirect the call to add a tracked data to the internal map so we can add
+     * it to our new storage structure. This
+     * should only ever occur during entity initialization. Type-erasure is a bit of
+     * a pain here since we must redirect
      * a calls to the generic Map interface.
      */
-    @Redirect(
-            method = "addTrackedData(Lnet/minecraft/entity/data/TrackedData;Ljava/lang/Object;)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;put(ILjava/lang/Object;)Ljava/lang/Object;",
-                    remap = false
-            )
-    )
+    @Redirect(method = "addTrackedData(Lnet/minecraft/entity/data/TrackedData;Ljava/lang/Object;)V", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;put(ILjava/lang/Object;)Ljava/lang/Object;", remap = false))
     private Object onAddTrackedDataInsertMap(Int2ObjectMap<?> int2ObjectMap, int k, Object valueRaw) {
         DataTracker.Entry<?> v = (DataTracker.Entry<?>) valueRaw;
 
@@ -54,7 +52,8 @@ public abstract class DataTrackerMixin {
 
         // Check if we need to grow the backing array to accommodate the new key range
         if (storage.length <= k) {
-            // Grow the array to accommodate 8 entries after this one, but limit it to never be larger
+            // Grow the array to accommodate 8 entries after this one, but limit it to never
+            // be larger
             // than 256 entries as per the vanilla limit
             int newSize = Math.min(k + GROW_FACTOR, 256);
 
@@ -81,18 +80,24 @@ public abstract class DataTrackerMixin {
 
             int id = data.getId();
 
-            // The vanilla implementation will simply return null if the tracker doesn't contain the specified entry. However,
-            // accessing an array with an invalid pointer will throw a OOB exception, where-as a HashMap would simply
-            // return null. We check this case (which should be free, even if so insignificant, as the subsequent bounds
+            // The vanilla implementation will simply return null if the tracker doesn't
+            // contain the specified entry. However,
+            // accessing an array with an invalid pointer will throw a OOB exception,
+            // where-as a HashMap would simply
+            // return null. We check this case (which should be free, even if so
+            // insignificant, as the subsequent bounds
             // check will hopefully be eliminated)
             if (id < 0 || id >= array.length) {
                 return null;
             }
 
-            // This cast can fail if trying to access a entry which doesn't belong to this tracker, as the ID could
-            // instead point to an entry of a different type. However, that is also vanilla behaviour.
-            // noinspection unchecked
-            return (DataTracker.Entry<T>) array[id];
+            // This cast can fail if trying to access a entry which doesn't belong to this
+            // tracker, as the ID could
+            // instead point to an entry of a different type. However, that is also vanilla
+            // behaviour.
+            @SuppressWarnings("unchecked")
+            DataTracker.Entry<T> entry = (DataTracker.Entry<T>) array[id];
+            return entry;
         } catch (Throwable cause) {
             // Move to another method so this function can be in-lined better
             throw onGetException(cause, data);

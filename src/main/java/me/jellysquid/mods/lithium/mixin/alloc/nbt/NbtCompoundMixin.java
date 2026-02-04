@@ -17,7 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Use {@link Object2ObjectOpenHashMap} instead of {@link HashMap} to reduce NBT memory consumption and improve
+ * Use {@link Object2ObjectOpenHashMap} instead of {@link HashMap} to reduce NBT
+ * memory consumption and improve
  * iteration speed.
  *
  * @author Maity
@@ -29,22 +30,12 @@ public class NbtCompoundMixin {
     @Final
     private Map<String, NbtElement> entries;
 
-    @ModifyArg(
-            method = "<init>()V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;<init>(Ljava/util/Map;)V")
-    )
+    @ModifyArg(method = "<init>()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NbtCompound;<init>(Ljava/util/Map;)V"))
     private static Map<String, NbtElement> useFasterCollection(Map<String, NbtElement> oldMap) {
         return new Object2ObjectOpenHashMap<>();
     }
 
-    @Redirect(
-            method = "<init>()V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lcom/google/common/collect/Maps;newHashMap()Ljava/util/HashMap;",
-                    remap = false
-            )
-    )
+    @Redirect(method = "<init>()V", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Maps;newHashMap()Ljava/util/HashMap;", remap = false))
     private static HashMap<?, ?> removeOldMapAlloc() {
         return null;
     }
@@ -56,6 +47,7 @@ public class NbtCompoundMixin {
     @Overwrite
     public NbtCompound copy() {
         // [VanillaCopy] HashMap is replaced with Object2ObjectOpenHashMap
+        @SuppressWarnings("null")
         var map = new Object2ObjectOpenHashMap<>(Maps.transformValues(this.entries, NbtElement::copy));
         return new NbtCompound(map);
     }
@@ -63,26 +55,12 @@ public class NbtCompoundMixin {
     @Mixin(targets = "net.minecraft.nbt.NbtCompound$1")
     static class Type {
 
-        @ModifyVariable(
-                method = "read(Ljava/io/DataInput;ILnet/minecraft/nbt/NbtTagSizeTracker;)Lnet/minecraft/nbt/NbtCompound;",
-                at = @At(
-                        value = "INVOKE_ASSIGN",
-                        target = "Lcom/google/common/collect/Maps;newHashMap()Ljava/util/HashMap;",
-                        remap = false
-                )
-        )
+        @ModifyVariable(method = "read(Ljava/io/DataInput;ILnet/minecraft/nbt/NbtTagSizeTracker;)Lnet/minecraft/nbt/NbtCompound;", at = @At(value = "INVOKE_ASSIGN", target = "Lcom/google/common/collect/Maps;newHashMap()Ljava/util/HashMap;", remap = false))
         private Map<String, NbtElement> useFasterCollection(Map<String, NbtElement> map) {
             return new Object2ObjectOpenHashMap<>();
         }
 
-        @Redirect(
-                method = "read(Ljava/io/DataInput;ILnet/minecraft/nbt/NbtTagSizeTracker;)Lnet/minecraft/nbt/NbtCompound;",
-                at = @At(
-                        value = "INVOKE",
-                        target = "Lcom/google/common/collect/Maps;newHashMap()Ljava/util/HashMap;",
-                        remap = false
-                )
-        )
+        @Redirect(method = "read(Ljava/io/DataInput;ILnet/minecraft/nbt/NbtTagSizeTracker;)Lnet/minecraft/nbt/NbtCompound;", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Maps;newHashMap()Ljava/util/HashMap;", remap = false))
         private HashMap<?, ?> removeOldMapAlloc() {
             return null;
         }

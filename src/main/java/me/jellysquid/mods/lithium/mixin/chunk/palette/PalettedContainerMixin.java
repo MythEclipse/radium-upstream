@@ -22,7 +22,6 @@ public abstract class PalettedContainerMixin {
     @Unique
     private static final PalettedContainer.DataProvider<?>[] BIOME_DATA_PROVIDERS;
 
-
     @Unique
     private static final Palette.Factory HASH = LithiumHashPalette::create;
     @Mutable
@@ -34,18 +33,22 @@ public abstract class PalettedContainerMixin {
     static Palette.Factory ID_LIST;
 
     /*
-     * @reason Replace the hash palette from vanilla with our own and change the threshold for usage to only 3 bits,
+     * @reason Replace the hash palette from vanilla with our own and change the
+     * threshold for usage to only 3 bits,
      * as our implementation performs better at smaller key ranges.
-     * @author JellySquid, 2No2Name (avoid DataProvider duplication, use hash palette for 3 bit biomes)
+     * 
+     * @author JellySquid, 2No2Name (avoid DataProvider duplication, use hash
+     * palette for 3 bit biomes)
      */
     static {
         Palette.Factory idListFactory = ID_LIST;
 
         PalettedContainer.DataProvider<?> arrayDataProvider4bit = new PalettedContainer.DataProvider<>(ARRAY, 4);
         PalettedContainer.DataProvider<?> hashDataProvider4bit = new PalettedContainer.DataProvider<>(HASH, 4);
-        BLOCKSTATE_DATA_PROVIDERS = new PalettedContainer.DataProvider<?>[]{
+        BLOCKSTATE_DATA_PROVIDERS = new PalettedContainer.DataProvider<?>[] {
                 new PalettedContainer.DataProvider<>(SINGULAR, 0),
-                // Bits 1-4 must all pass 4 bits as parameter, otherwise chunk sections will corrupt.
+                // Bits 1-4 must all pass 4 bits as parameter, otherwise chunk sections will
+                // corrupt.
                 arrayDataProvider4bit,
                 arrayDataProvider4bit,
                 hashDataProvider4bit,
@@ -60,27 +63,28 @@ public abstract class PalettedContainerMixin {
             @Override
             public <A> PalettedContainer.DataProvider<A> createDataProvider(IndexedIterable<A> idList, int bits) {
                 if (bits >= 0 && bits < BLOCKSTATE_DATA_PROVIDERS.length) {
-                    //noinspection unchecked
-                    return (PalettedContainer.DataProvider<A>) BLOCKSTATE_DATA_PROVIDERS[bits];
+                    @SuppressWarnings("unchecked")
+                    PalettedContainer.DataProvider<A> provider = (PalettedContainer.DataProvider<A>) BLOCKSTATE_DATA_PROVIDERS[bits];
+                    return provider;
                 }
                 return new PalettedContainer.DataProvider<>(idListFactory, MathHelper.ceilLog2(idList.size()));
             }
         };
 
-        BIOME_DATA_PROVIDERS = new PalettedContainer.DataProvider<?>[]{
+        BIOME_DATA_PROVIDERS = new PalettedContainer.DataProvider<?>[] {
                 new PalettedContainer.DataProvider<>(SINGULAR, 0),
                 new PalettedContainer.DataProvider<>(ARRAY, 1),
                 new PalettedContainer.DataProvider<>(ARRAY, 2),
                 new PalettedContainer.DataProvider<>(HASH, 3)
         };
 
-
         BIOME = new PalettedContainer.PaletteProvider(2) {
             @Override
             public <A> PalettedContainer.DataProvider<A> createDataProvider(IndexedIterable<A> idList, int bits) {
                 if (bits >= 0 && bits < BIOME_DATA_PROVIDERS.length) {
-                    //noinspection unchecked
-                    return (PalettedContainer.DataProvider<A>) BIOME_DATA_PROVIDERS[bits];
+                    @SuppressWarnings("unchecked")
+                    PalettedContainer.DataProvider<A> provider = (PalettedContainer.DataProvider<A>) BIOME_DATA_PROVIDERS[bits];
+                    return provider;
                 }
                 return new PalettedContainer.DataProvider<>(idListFactory, MathHelper.ceilLog2(idList.size()));
             }

@@ -55,12 +55,9 @@ public class ChunkTickSchedulerMixin<T> {
     @Final
     private Queue<OrderedTick<T>> tickQueue;
 
-    @Inject(
-            method = {"<init>()V", "<init>(Ljava/util/List;)V"},
-            at = @At("RETURN")
-    )
+    @Inject(method = { "<init>()V", "<init>(Ljava/util/List;)V" }, at = @At("RETURN"))
     private void reinit(CallbackInfo ci) {
-        //Remove replaced collections
+        // Remove replaced collections
         if (this.ticks != null) {
             for (Tick<?> orderedTick : this.ticks) {
                 this.allTicks.add(tickToInt(orderedTick.pos(), orderedTick.type()));
@@ -71,10 +68,11 @@ public class ChunkTickSchedulerMixin<T> {
     }
 
     private static int tickToInt(BlockPos pos, Object type) {
-        //Y coordinate is 12 bits (BlockPos.toLong)
-        //X and Z coordinate is 4 bits each (This scheduler is for a single chunk)
-        //20 bits are in use for pos
-        //12 bits remaining for the type, so up to 4096 different tickable blocks/fluids (not block states) -> can upgrade to long if needed
+        // Y coordinate is 12 bits (BlockPos.toLong)
+        // X and Z coordinate is 4 bits each (This scheduler is for a single chunk)
+        // 20 bits are in use for pos
+        // 12 bits remaining for the type, so up to 4096 different tickable
+        // blocks/fluids (not block states) -> can upgrade to long if needed
         int typeIndex = TYPE_2_INDEX.getInt(type);
         if (typeIndex == -1) {
             typeIndex = fixMissingType2Index(type);
@@ -85,17 +83,20 @@ public class ChunkTickSchedulerMixin<T> {
         return ret;
     }
 
-    //This method must be synchronized, otherwise type->int assignments can be overwritten and therefore change
-    //Uses clone and volatile store to ensure only fully initialized maps are used, all threads share the same mapping
+    // This method must be synchronized, otherwise type->int assignments can be
+    // overwritten and therefore change
+    // Uses clone and volatile store to ensure only fully initialized maps are used,
+    // all threads share the same mapping
     private static synchronized int fixMissingType2Index(Object type) {
-        //check again, other thread might have replaced the collection
+        // check again, other thread might have replaced the collection
         int typeIndex = TYPE_2_INDEX.getInt(type);
         if (typeIndex == -1) {
             Reference2IntOpenHashMap<Object> clonedType2Index = TYPE_2_INDEX.clone();
             clonedType2Index.put(type, typeIndex = clonedType2Index.size());
             TYPE_2_INDEX = clonedType2Index;
             if (typeIndex >= 4096) {
-                throw new IllegalStateException("Lithium Tick Scheduler assumes at most 4096 different block types that receive scheduled ticks exist! Add mixin.world.tick_scheduler=false to the lithium properties/config to disable the optimization!");
+                throw new IllegalStateException(
+                        "Lithium Tick Scheduler assumes at most 4096 different block types that receive scheduled ticks exist! Add mixin.world.tick_scheduler=false to the lithium properties/config to disable the optimization!");
             }
         }
         return typeIndex;
@@ -117,13 +118,14 @@ public class ChunkTickSchedulerMixin<T> {
     // Keys can be sorted in descending order to find what should be executed first
     // 60 time bits, 4 priority bits
     private static long getBucketKey(long time, TickPriority priority) {
-        //using priority.ordinal() as is not negative instead of priority.index
+        // using priority.ordinal() as is not negative instead of priority.index
         return (time << 4L) | (priority.ordinal() & 15);
     }
 
     private void updateNextTickQueue(boolean checkEmpty) {
         if (checkEmpty && this.nextTickQueue != null && this.nextTickQueue.isEmpty()) {
-            OrderedTickQueue<T> removed = this.tickQueuesByTimeAndPriority.remove(this.tickQueuesByTimeAndPriority.firstLongKey());
+            OrderedTickQueue<T> removed = this.tickQueuesByTimeAndPriority
+                    .remove(this.tickQueuesByTimeAndPriority.firstLongKey());
             if (removed != this.nextTickQueue) {
                 throw new IllegalStateException("Next tick queue doesn't have the lowest key!");
             }
@@ -167,17 +169,18 @@ public class ChunkTickSchedulerMixin<T> {
         return null;
     }
 
-
     private void queueTick(OrderedTick<T> orderedTick) {
-        OrderedTickQueue<T> tickQueue = this.tickQueuesByTimeAndPriority.computeIfAbsent(getBucketKey(orderedTick.triggerTick(), orderedTick.priority()), key -> new OrderedTickQueue<>());
+        OrderedTickQueue<T> tickQueue = this.tickQueuesByTimeAndPriority.computeIfAbsent(
+                getBucketKey(orderedTick.triggerTick(), orderedTick.priority()), key -> new OrderedTickQueue<>());
         if (tickQueue.isEmpty()) {
             this.updateNextTickQueue(false);
         }
         tickQueue.offer(orderedTick);
 
         if (this.tickConsumer != null) {
-            //noinspection unchecked
-            this.tickConsumer.accept((ChunkTickScheduler<T>) (Object) this, orderedTick);
+            @SuppressWarnings("unchecked")
+            ChunkTickScheduler<T> self = (ChunkTickScheduler<T>) (Object) this;
+            this.tickConsumer.accept(self, orderedTick);
         }
     }
 
@@ -196,7 +199,8 @@ public class ChunkTickSchedulerMixin<T> {
      */
     @Overwrite
     public void removeTicksIf(Predicate<OrderedTick<T>> predicate) {
-        for (ObjectIterator<OrderedTickQueue<T>> tickQueueIterator = this.tickQueuesByTimeAndPriority.values().iterator(); tickQueueIterator.hasNext(); ) {
+        for (ObjectIterator<OrderedTickQueue<T>> tickQueueIterator = this.tickQueuesByTimeAndPriority.values()
+                .iterator(); tickQueueIterator.hasNext();) {
             OrderedTickQueue<T> nextTickQueue = tickQueueIterator.next();
             nextTickQueue.sort();
             boolean removed = false;
@@ -227,7 +231,6 @@ public class ChunkTickSchedulerMixin<T> {
         return this.tickQueuesByTimeAndPriority.values().stream().flatMap(Collection::stream);
     }
 
-
     /**
      * @author 2No2Name
      * @reason not use unused field
@@ -256,7 +259,6 @@ public class ChunkTickSchedulerMixin<T> {
         }
         return nbtList;
     }
-
 
     /**
      * @author 2No2Name

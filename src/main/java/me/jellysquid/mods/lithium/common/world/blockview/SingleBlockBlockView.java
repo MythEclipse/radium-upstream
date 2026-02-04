@@ -12,12 +12,12 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
 import net.minecraft.world.border.WorldBorder;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
-public record SingleBlockBlockView(BlockState state, BlockPos blockPos) implements BlockView, CollisionView {
+public record SingleBlockBlockView(BlockState state, BlockPos blockPos) implements CollisionView {
     public static SingleBlockBlockView of(BlockState blockState, BlockPos blockPos) {
         return new SingleBlockBlockView(blockState, blockPos.toImmutable());
     }
@@ -118,7 +118,8 @@ public record SingleBlockBlockView(BlockState state, BlockPos blockPos) implemen
     }
 
     @Override
-    public Optional<Vec3d> findClosestCollision(@Nullable Entity entity, VoxelShape shape, Vec3d target, double x, double y, double z) {
+    public Optional<Vec3d> findClosestCollision(@Nullable Entity entity, VoxelShape shape, Vec3d target, double x,
+            double y, double z) {
         throw SingleBlockViewException.INSTANCE;
     }
 

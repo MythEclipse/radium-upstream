@@ -39,6 +39,7 @@ public class SectionedInventoryEntityMovementTracker<S> extends SectionedEntityM
         ArrayList<S> entities = new ArrayList<>();
         for (int i = 0; i < this.sortedSections.size(); i++) {
             if (this.sectionVisible[i]) {
+                @SuppressWarnings("unchecked")
                 // noinspection unchecked
                 TypeFilterableList<S> collection = ((EntityTrackingSectionAccessor<S>) this.sortedSections.get(i))
                         .getCollection();

@@ -6,5 +6,5 @@ public interface NearbyEntityListenerProvider {
     @Nullable
     NearbyEntityListenerMulti getListener();
 
-    void addListener(NearbyEntityTracker listener);
+    void addListener(NearbyEntityTracker<?> listener);
 }

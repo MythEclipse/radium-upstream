@@ -33,9 +33,9 @@ public class BoatEntityMixin {
         if (predicate instanceof EntityPushablePredicate<?> entityPushablePredicate) {
             SectionedEntityCache<Entity> cache = WorldHelper.getEntityCacheOrNull(world);
             if (cache != null) {
-                // noinspection unchecked
-                return WorldHelper.getPushableEntities(world, cache, except, box,
-                        (EntityPushablePredicate<? super Entity>) entityPushablePredicate);
+                @SuppressWarnings("unchecked")
+                EntityPushablePredicate<? super Entity> castPredicate = (EntityPushablePredicate<? super Entity>) entityPushablePredicate;
+                return WorldHelper.getPushableEntities(world, cache, except, box, castPredicate);
             }
         }
         return world.getOtherEntities(except, box, predicate);

@@ -24,18 +24,39 @@ import static net.minecraft.block.Block.createCuboidShape;
  * @author 2No2Name
  */
 public class TestOptimizedVoxelShapeMatchesAnywhere {
-    static final BooleanBiFunction[] FUNCTIONS = {BooleanBiFunction.AND, BooleanBiFunction.ONLY_FIRST, BooleanBiFunction.ONLY_SECOND, BooleanBiFunction.NOT_SAME};
+    static final BooleanBiFunction[] FUNCTIONS = { BooleanBiFunction.AND, BooleanBiFunction.ONLY_FIRST,
+            BooleanBiFunction.ONLY_SECOND, BooleanBiFunction.NOT_SAME };
     static final VoxelShape[] TESTED_COMPLEX_SHAPES = {
-            //Cauldron:
-            VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), VoxelShapes.union(createCuboidShape(0.0D, 0.0D, 4.0D, 16.0D, 3.0D, 12.0D), createCuboidShape(4.0D, 0.0D, 0.0D, 12.0D, 3.0D, 16.0D), createCuboidShape(2.0D, 0.0D, 2.0D, 14.0D, 3.0D, 14.0D), createCuboidShape(2.0D, 4.0D, 2.0D, 14.0D, 16.0D, 14.0D)), BooleanBiFunction.ONLY_FIRST),
-            //Hopper
-            VoxelShapes.union(VoxelShapes.combineAndSimplify(VoxelShapes.union(Block.createCuboidShape(4.0D, 4.0D, 4.0D, 12.0D, 10.0D, 12.0D), Block.createCuboidShape(0.0D, 10.0D, 0.0D, 16.0D, 16.0D, 16.0D)), Block.createCuboidShape(2.0D, 11.0D, 2.0D, 14.0D, 16.0D, 14.0D), BooleanBiFunction.ONLY_FIRST), Block.createCuboidShape(12.0D, 4.0D, 6.0D, 16.0D, 8.0D, 10.0D)),
-            //Anvil
-            VoxelShapes.union(Block.createCuboidShape(2.0D, 0.0D, 2.0D, 14.0D, 4.0D, 14.0D), Block.createCuboidShape(3.0D, 4.0D, 4.0D, 13.0D, 5.0D, 12.0D), Block.createCuboidShape(4.0D, 5.0D, 6.0D, 12.0D, 10.0D, 10.0D), Block.createCuboidShape(0.0D, 10.0D, 3.0D, 16.0D, 16.0D, 13.0D)),
-            //Bell on wall
-            VoxelShapes.union(VoxelShapes.union(Block.createCuboidShape(4.0D, 4.0D, 4.0D, 12.0D, 6.0D, 12.0D), Block.createCuboidShape(5.0D, 6.0D, 5.0D, 11.0D, 13.0D, 11.0D)), Block.createCuboidShape(7.0D, 13.0D, 0.0D, 9.0D, 15.0D, 13.0D)),
-            //Bell hanging
-            VoxelShapes.union(VoxelShapes.union(Block.createCuboidShape(4.0D, 4.0D, 4.0D, 12.0D, 6.0D, 12.0D), Block.createCuboidShape(5.0D, 6.0D, 5.0D, 11.0D, 13.0D, 11.0D)), Block.createCuboidShape(7.0D, 13.0D, 7.0D, 9.0D, 16.0D, 9.0D))
+            // Cauldron:
+            VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(),
+                    VoxelShapes.union(createCuboidShape(0.0D, 0.0D, 4.0D, 16.0D, 3.0D, 12.0D),
+                            createCuboidShape(4.0D, 0.0D, 0.0D, 12.0D, 3.0D, 16.0D),
+                            createCuboidShape(2.0D, 0.0D, 2.0D, 14.0D, 3.0D, 14.0D),
+                            createCuboidShape(2.0D, 4.0D, 2.0D, 14.0D, 16.0D, 14.0D)),
+                    BooleanBiFunction.ONLY_FIRST),
+            // Hopper
+            VoxelShapes.union(
+                    VoxelShapes.combineAndSimplify(
+                            VoxelShapes.union(Block.createCuboidShape(4.0D, 4.0D, 4.0D, 12.0D, 10.0D, 12.0D),
+                                    Block.createCuboidShape(0.0D, 10.0D, 0.0D, 16.0D, 16.0D, 16.0D)),
+                            Block.createCuboidShape(2.0D, 11.0D, 2.0D, 14.0D, 16.0D, 14.0D),
+                            BooleanBiFunction.ONLY_FIRST),
+                    Block.createCuboidShape(12.0D, 4.0D, 6.0D, 16.0D, 8.0D, 10.0D)),
+            // Anvil
+            VoxelShapes.union(Block.createCuboidShape(2.0D, 0.0D, 2.0D, 14.0D, 4.0D, 14.0D),
+                    Block.createCuboidShape(3.0D, 4.0D, 4.0D, 13.0D, 5.0D, 12.0D),
+                    Block.createCuboidShape(4.0D, 5.0D, 6.0D, 12.0D, 10.0D, 10.0D),
+                    Block.createCuboidShape(0.0D, 10.0D, 3.0D, 16.0D, 16.0D, 13.0D)),
+            // Bell on wall
+            VoxelShapes.union(
+                    VoxelShapes.union(Block.createCuboidShape(4.0D, 4.0D, 4.0D, 12.0D, 6.0D, 12.0D),
+                            Block.createCuboidShape(5.0D, 6.0D, 5.0D, 11.0D, 13.0D, 11.0D)),
+                    Block.createCuboidShape(7.0D, 13.0D, 0.0D, 9.0D, 15.0D, 13.0D)),
+            // Bell hanging
+            VoxelShapes.union(
+                    VoxelShapes.union(Block.createCuboidShape(4.0D, 4.0D, 4.0D, 12.0D, 6.0D, 12.0D),
+                            Block.createCuboidShape(5.0D, 6.0D, 5.0D, 11.0D, 13.0D, 11.0D)),
+                    Block.createCuboidShape(7.0D, 13.0D, 7.0D, 9.0D, 16.0D, 9.0D))
     };
 
     public static void main(String[] args) {
@@ -58,10 +79,12 @@ public class TestOptimizedVoxelShapeMatchesAnywhere {
 
         try {
             for (int i = 0; i < 100000000; i++) {
-                //get two random cuboid shapes that are offset so often usually barely touch or barely not touch.
+                // get two random cuboid shapes that are offset so often usually barely touch or
+                // barely not touch.
                 pair = getRandomTest(random);
                 testMatchesAnywhere(pair.a, pair.b, pair.function);
-                //use one of the predefined complex non cuboid shapes and a random box randomly close to it
+                // use one of the predefined complex non cuboid shapes and a random box randomly
+                // close to it
                 pair = getRandomTestWithComplexShape(random);
                 testMatchesAnywhere(pair.a, pair.b, pair.function);
             }
@@ -70,13 +93,15 @@ public class TestOptimizedVoxelShapeMatchesAnywhere {
                 throw new IllegalStateException("Test failed in initialization");
             }
             e.printStackTrace();
-            throw new IllegalStateException("Test failed with args: " + pair.a + ", " + pair.b + ", " + Arrays.asList(FUNCTIONS).indexOf(pair.function));
+            throw new IllegalStateException("Test failed with args: " + pair.a + ", " + pair.b + ", "
+                    + Arrays.asList(FUNCTIONS).indexOf(pair.function));
         }
-        System.out.println("Total: " + total + "\nSkippedModCode: " + notRunModCode + "\nMatchedAnywhere: " + matchedAnywhere + "\nNotMatchedAnywhere: " + notMatchedAnywhere);
+        System.out.println("Total: " + total + "\nSkippedModCode: " + notRunModCode + "\nMatchedAnywhere: "
+                + matchedAnywhere + "\nNotMatchedAnywhere: " + notMatchedAnywhere);
     }
 
     private static void testMatchesAnywhere(VoxelShape one, VoxelShape two, BooleanBiFunction function) {
-        //get the vanilla behavior to compare our implementation with
+        // get the vanilla behavior to compare our implementation with
         boolean vanillaResult = VoxelShapes.matchesAnywhere(one, two, function);
         total++;
         if (vanillaResult) {
@@ -90,11 +115,11 @@ public class TestOptimizedVoxelShapeMatchesAnywhere {
             notRunModCode++;
         }
         if ((moddedResult == 1) != vanillaResult && moddedResult != -1) {
-            //these lines only make debugging easier
+            // these lines only make debugging easier
             boolean repeat = true;
             while (repeat) {
                 int moddedResult2 = matchesAnywhereModded(one, two, function);
-                boolean vanillaResult2 = VoxelShapes.matchesAnywhere(one, two, function);
+                VoxelShapes.matchesAnywhere(one, two, function);
                 repeat = moddedResult2 != 10;
             }
 
@@ -103,7 +128,7 @@ public class TestOptimizedVoxelShapeMatchesAnywhere {
     }
 
     private static int matchesAnywhereModded(VoxelShape shape1, VoxelShape shape2, BooleanBiFunction predicate) {
-        //code from vanilla
+        // code from vanilla
         if (predicate.apply(false, false)) {
             throw Util.throwOrPause(new IllegalArgumentException());
         } else if (shape1 == shape2) {
@@ -126,7 +151,7 @@ public class TestOptimizedVoxelShapeMatchesAnywhere {
                     return -1;
                 }
             }
-            //lithium code
+            // lithium code
             CallbackInfoReturnable<Boolean> cir = new CallbackInfoReturnable<>("matchesAnywhereModded", true);
             cuboidMatchesAnywhere(shape1, shape2, predicate, cir);
             if (cir.isCancelled()) {
@@ -135,7 +160,6 @@ public class TestOptimizedVoxelShapeMatchesAnywhere {
             return -1;
         }
     }
-
 
     public static VoxelShapeVoxelShapePair getRandomTest(Random random) {
         double x = random.nextInt(1000) - 500 + random.nextDouble();
@@ -177,7 +201,6 @@ public class TestOptimizedVoxelShapeMatchesAnywhere {
     private static VoxelShape cuboid(Box box) {
         return cuboidUnchecked(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
     }
-
 
     private static VoxelShapeVoxelShapePair getRandomTestWithComplexShape(Random random) {
         VoxelShape complexShape = Util.getRandom(TESTED_COMPLEX_SHAPES, random);
@@ -221,12 +244,13 @@ public class TestOptimizedVoxelShapeMatchesAnywhere {
         return new VoxelShapeVoxelShapePair(cuboid(b), complexShape, function);
     }
 
-    private static double getFuzzy(double val, Random random, double specialValue, float chanceFuzz, float chanceBigFuzz, float chanceSpecialOffset) {
+    private static double getFuzzy(double val, Random random, double specialValue, float chanceFuzz,
+            float chanceBigFuzz, float chanceSpecialOffset) {
         if (random.nextFloat() < chanceFuzz) {
             if (random.nextInt(8) > 1) {
                 val += 3e-7 * random.nextDouble() * (random.nextInt(2) * 2 - 1);
             } else {
-                //test exactly around 1e-7 offsets
+                // test exactly around 1e-7 offsets
                 val += (random.nextInt(3) - 1) * 1e-7;
 
                 boolean b = random.nextBoolean();

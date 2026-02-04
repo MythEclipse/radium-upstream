@@ -53,7 +53,10 @@ public interface SleepingBlockEntity {
             sleepingTicker = tickWrapper.getWrapped();
         }
         World world = ((BlockEntity) this).getWorld();
-        tickWrapper.callSetWrapped(new SleepUntilTimeBlockEntityTickInvoker((BlockEntity) this, world.getTime() + 1, sleepingTicker));
+        if (world != null) {
+            tickWrapper.callSetWrapped(
+                    new SleepUntilTimeBlockEntityTickInvoker((BlockEntity) this, world.getTime() + 1, sleepingTicker));
+        }
         this.setSleepingTicker(null);
     }
 

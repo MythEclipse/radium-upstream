@@ -47,7 +47,7 @@ public abstract class ItemStackMixin implements StorableItemStack {
         } else if (this.myLocation instanceof Set<?>) {
             this.lithiumUnregisterMultipleInventories(myInventoryList, index);
         } else {
-            //Todo does this even happen? This seems to be unexpected behavior
+            // Todo does this even happen? This seems to be unexpected behavior
             this.myLocation = null;
         }
     }
@@ -67,8 +67,9 @@ public abstract class ItemStackMixin implements StorableItemStack {
     private void lithiumRegisterMultipleInventories(LithiumStackList itemStacks, int mySlot) {
         Set<RefIntPair<LithiumStackList>> stackLists;
         if (this.myLocation instanceof Set<?>) {
-            //noinspection unchecked
-            stackLists = (Set<RefIntPair<LithiumStackList>>) this.myLocation;
+            @SuppressWarnings("unchecked")
+            Set<RefIntPair<LithiumStackList>> castSet = (Set<RefIntPair<LithiumStackList>>) this.myLocation;
+            stackLists = castSet;
         } else {
             stackLists = new ObjectOpenHashSet<>();
             if (this.myLocation != null) {
@@ -83,9 +84,11 @@ public abstract class ItemStackMixin implements StorableItemStack {
     }
 
     private void lithiumUnregisterMultipleInventories(LithiumStackList itemStacks, int mySlot) {
-        //Handle shadow item technology correctly (Item in multiple inventories at once!)
+        // Handle shadow item technology correctly (Item in multiple inventories at
+        // once!)
         if (this.myLocation instanceof Set<?> set) {
-            //noinspection unchecked
+            @SuppressWarnings("unchecked")
+            // noinspection unchecked
             Set<RefIntPair<LithiumStackList>> stackLists = (Set<RefIntPair<LithiumStackList>>) set;
             if (mySlot >= 0) {
                 stackLists.remove(new RefIntPair<>(itemStacks, mySlot));
@@ -97,9 +100,11 @@ public abstract class ItemStackMixin implements StorableItemStack {
     }
 
     private void lithiumUpdateMultipleInventories() {
-        //Handle shadow item technology correctly (Item in multiple inventories at once!)
+        // Handle shadow item technology correctly (Item in multiple inventories at
+        // once!)
         if (this.myLocation instanceof Set<?> set) {
-            //noinspection unchecked
+            @SuppressWarnings("unchecked")
+            // noinspection unchecked
             Set<RefIntPair<LithiumStackList>> stackLists = (Set<RefIntPair<LithiumStackList>>) set;
             for (RefIntPair<LithiumStackList> stackListLocationPair : stackLists) {
                 stackListLocationPair.left().beforeSlotCountChange(stackListLocationPair.right(), count);

@@ -30,7 +30,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -86,7 +85,8 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
         if (worldBorderIsFarAway) {
             poiPredicateAfterSorting = afterSortPredicate;
         } else {
-            poiPredicateAfterSorting = poi -> worldBorder.contains(poi.getPos()) && afterSortPredicate.test(poi);
+            poiPredicateAfterSorting = poi -> worldBorder != null && worldBorder.contains(poi.getPos())
+                    && afterSortPredicate.test(poi);
         }
         return this.streamOutwards(origin, radius, status, true, true, new SinglePointOfInterestTypeFilter(type),
                 poiPredicateAfterSorting).findFirst();

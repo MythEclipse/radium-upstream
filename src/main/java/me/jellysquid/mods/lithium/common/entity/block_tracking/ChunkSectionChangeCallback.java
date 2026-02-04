@@ -11,15 +11,16 @@ public final class ChunkSectionChangeCallback {
     private short listeningMask;
 
     public ChunkSectionChangeCallback() {
-        //noinspection unchecked
-        this.trackers = new ArrayList[BlockStateFlags.NUM_LISTENING_FLAGS];
+        @SuppressWarnings("unchecked")
+        ArrayList<SectionedBlockChangeTracker>[] trackers = (ArrayList<SectionedBlockChangeTracker>[]) new ArrayList[BlockStateFlags.NUM_LISTENING_FLAGS];
+        this.trackers = trackers;
         this.listeningMask = 0;
     }
 
     public short onBlockChange(int flagIndex, BlockListeningSection section) {
         ArrayList<SectionedBlockChangeTracker> sectionedBlockChangeTrackers = this.trackers[flagIndex];
         this.trackers[flagIndex] = null;
-        //noinspection ForLoopReplaceableByForEach
+        // noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < sectionedBlockChangeTrackers.size(); i++) {
             sectionedBlockChangeTrackers.get(i).setChanged(section);
         }

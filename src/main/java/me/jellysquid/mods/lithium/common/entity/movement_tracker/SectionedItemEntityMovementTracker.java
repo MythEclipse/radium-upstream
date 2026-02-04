@@ -41,7 +41,7 @@ public class SectionedItemEntityMovementTracker<S extends Entity> extends Sectio
         Box encompassingBox = areas[numBoxes];
         for (int sectionIndex = 0; sectionIndex < this.sortedSections.size(); sectionIndex++) {
             if (this.sectionVisible[sectionIndex]) {
-                // noinspection unchecked
+                @SuppressWarnings("unchecked")
                 TypeFilterableList<S> collection = ((EntityTrackingSectionAccessor<S>) this.sortedSections
                         .get(sectionIndex)).getCollection();
 

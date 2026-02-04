@@ -28,8 +28,10 @@ public abstract class ItemFrameEntityMixin extends AbstractDecorationEntity {
             return java.util.Collections.emptyList();
         }
         if (predicate == PREDICATE) {
-            // noinspection unchecked,rawtypes
-            return (List) world.getEntitiesByClass(AbstractDecorationEntity.class, box, entity -> entity != excluded);
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            List<Entity> result = (List) world.getEntitiesByClass(AbstractDecorationEntity.class, box,
+                    entity -> entity != excluded);
+            return result;
 
         }
 

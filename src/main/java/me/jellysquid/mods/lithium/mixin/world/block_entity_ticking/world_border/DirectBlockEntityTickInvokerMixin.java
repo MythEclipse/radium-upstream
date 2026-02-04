@@ -51,12 +51,16 @@ public abstract class DirectBlockEntityTickInvokerMixin implements WorldBorderLi
         if ((worldBorderState & 3) == 3) {
             return (worldBorderState & 4) != 0;
         }
-        return this.blockEntity.getWorld().getWorldBorder().contains(this.getPos());
+        World world = this.blockEntity.getWorld();
+        return world != null && world.getWorldBorder().contains(this.getPos());
     }
 
     private void startWorldBorderCaching() {
         this.worldBorderState = (byte) 1;
-        WorldBorder worldBorder = this.blockEntity.getWorld().getWorldBorder();
+        World world = this.blockEntity.getWorld();
+        if (world == null)
+            return;
+        WorldBorder worldBorder = world.getWorldBorder();
         worldBorder.addListener(this);
         boolean isStationary = worldBorder.getStage() == WorldBorderStage.STATIONARY;
         if (worldBorder.contains(this.getPos())) {

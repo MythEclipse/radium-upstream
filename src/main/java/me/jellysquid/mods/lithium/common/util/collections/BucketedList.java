@@ -9,8 +9,9 @@ public class BucketedList<T> extends AbstractList<T> {
     private int size;
 
     public BucketedList(int numBuckets) {
-        //noinspection unchecked
-        this.buckets = new ArrayList[numBuckets];
+        @SuppressWarnings("unchecked")
+        ArrayList<T>[] buckets = (ArrayList<T>[]) new ArrayList[numBuckets];
+        this.buckets = buckets;
     }
 
     public void addToBucket(int bucket, T element) {

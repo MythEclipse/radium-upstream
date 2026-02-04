@@ -4,7 +4,7 @@ import com.google.common.collect.Table;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.HashCommon;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.Collection;
 import java.util.Map;
@@ -103,27 +103,27 @@ public class FastImmutableTable<R, C, V> implements Table<R, C, V> {
     }
 
     @Override
-    public boolean contains(Object rowKey, Object columnKey) {
+    public boolean contains(@Nonnull Object rowKey, @Nonnull Object columnKey) {
         return this.get(rowKey, columnKey) != null;
     }
 
     @Override
-    public boolean containsRow(Object rowKey) {
+    public boolean containsRow(@Nonnull Object rowKey) {
         return this.find(this.rowKeys, this.rowMask, rowKey) >= 0;
     }
 
     @Override
-    public boolean containsColumn(Object columnKey) {
+    public boolean containsColumn(@Nonnull Object columnKey) {
         return this.find(this.colKeys, this.colMask, columnKey) >= 0;
     }
 
     @Override
-    public boolean containsValue(Object value) {
+    public boolean containsValue(@Nonnull Object value) {
         return ArrayUtils.contains(this.values, value);
     }
 
     @Override
-    public V get(Object rowKey, Object columnKey) {
+    public V get(@Nonnull Object rowKey, @Nonnull Object columnKey) {
         final int row = this.getIndex(this.rowKeys, this.rowIndices, this.rowMask, rowKey);
         final int col = this.getIndex(this.colKeys, this.colIndices, this.colMask, columnKey);
 
@@ -150,7 +150,7 @@ public class FastImmutableTable<R, C, V> implements Table<R, C, V> {
     }
 
     @Override
-    public V put(R rowKey, C columnKey, V val) {
+    public V put(@Nonnull R rowKey, @Nonnull C columnKey, @Nonnull V val) {
         throw new UnsupportedOperationException();
     }
 
@@ -176,52 +176,52 @@ public class FastImmutableTable<R, C, V> implements Table<R, C, V> {
     }
 
     @Override
-    public void putAll(@NotNull Table<? extends R, ? extends C, ? extends V> table) {
+    public void putAll(@Nonnull Table<? extends R, ? extends C, ? extends V> table) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public V remove(Object rowKey, Object columnKey) {
+    public V remove(@Nonnull Object rowKey, @Nonnull Object columnKey) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public @NotNull Map<C, V> row(R rowKey) {
+    public @Nonnull Map<C, V> row(@Nonnull R rowKey) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public @NotNull Map<R, V> column(C columnKey) {
+    public @Nonnull Map<R, V> column(@Nonnull C columnKey) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public @NotNull Set<Cell<R, C, V>> cellSet() {
+    public @Nonnull Set<Cell<R, C, V>> cellSet() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public @NotNull Set<R> rowKeySet() {
+    public @Nonnull Set<R> rowKeySet() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public @NotNull Set<C> columnKeySet() {
+    public @Nonnull Set<C> columnKeySet() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public @NotNull Collection<V> values() {
+    public @Nonnull Collection<V> values() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public @NotNull Map<R, Map<C, V>> rowMap() {
+    public @Nonnull Map<R, Map<C, V>> rowMap() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public @NotNull Map<C, Map<R, V>> columnMap() {
+    public @Nonnull Map<C, Map<R, V>> columnMap() {
         throw new UnsupportedOperationException();
     }
 }

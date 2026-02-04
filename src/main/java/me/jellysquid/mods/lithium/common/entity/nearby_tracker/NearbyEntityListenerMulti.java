@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Allows for multiple listeners on an entity to be grouped under one logical listener. No guarantees are made about the
+ * Allows for multiple listeners on an entity to be grouped under one logical
+ * listener. No guarantees are made about the
  * order of which each sub-listener will be notified.
  */
 public class NearbyEntityListenerMulti implements NearbyEntityListener {
@@ -38,8 +39,10 @@ public class NearbyEntityListenerMulti implements NearbyEntityListener {
         if (!this.range.equals(updatedRange)) {
             this.range = updatedRange;
 
-            //noinspection unchecked
-            SectionedEntityCache<S> entityCache = ((ServerEntityManagerAccessor<S>)((ServerWorldAccessor)tracker.getEntity().getWorld()).getEntityManager()).getCache();
+            @SuppressWarnings("unchecked")
+            // noinspection unchecked
+            SectionedEntityCache<S> entityCache = ((ServerEntityManagerAccessor<S>) ((ServerWorldAccessor) tracker
+                    .getEntity().getWorld()).getEntityManager()).getCache();
             ChunkSectionPos chunkPos = ChunkSectionPos.from(tracker.getEntity().getBlockPos());
 
             this.updateChunkRegistrations(entityCache, chunkPos, this.range, chunkPos, updatedRange);
@@ -98,7 +101,7 @@ public class NearbyEntityListenerMulti implements NearbyEntityListener {
         String comma = "";
         for (NearbyEntityListener listener : this.listeners) {
             sublisteners.append(comma).append(listener.toString());
-            comma = ","; //trick to drop the first comma
+            comma = ","; // trick to drop the first comma
         }
 
         return super.toString() + " with sublisteners: [" + sublisteners + "]";

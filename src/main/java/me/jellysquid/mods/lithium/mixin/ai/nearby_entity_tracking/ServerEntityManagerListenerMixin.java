@@ -37,9 +37,10 @@ public class ServerEntityManagerListenerMixin<T extends EntityLike> {
                 NearbyEntityListenerMulti listener = ((NearbyEntityListenerProvider) this.entity).getListener();
                 if (listener != null) {
                         Range6Int chunkRange = listener.getChunkRange();
-                        // noinspection unchecked
+                        @SuppressWarnings("unchecked")
+                        ServerEntityManagerAccessor<T> accessor = (ServerEntityManagerAccessor<T>) this.manager;
                         listener.updateChunkRegistrations(
-                                        ((ServerEntityManagerAccessor<T>) this.manager).getCache(),
+                                        accessor.getCache(),
                                         ChunkSectionPos.from(this.sectionPos), chunkRange,
                                         ChunkSectionPos.from(newPos), chunkRange);
                 }
@@ -49,9 +50,10 @@ public class ServerEntityManagerListenerMixin<T extends EntityLike> {
         private void onRemoveEntity(Entity.RemovalReason reason, CallbackInfo ci) {
                 NearbyEntityListenerMulti listener = ((NearbyEntityListenerProvider) this.entity).getListener();
                 if (listener != null) {
-                        // noinspection unchecked
+                        @SuppressWarnings("unchecked")
+                        ServerEntityManagerAccessor<T> accessor = (ServerEntityManagerAccessor<T>) this.manager;
                         listener.removeFromAllChunksInRange(
-                                        ((ServerEntityManagerAccessor<T>) this.manager).getCache(),
+                                        accessor.getCache(),
                                         ChunkSectionPos.from(this.sectionPos));
                 }
         }

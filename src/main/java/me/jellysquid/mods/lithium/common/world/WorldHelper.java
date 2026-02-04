@@ -66,11 +66,15 @@ public class WorldHelper {
     // Requires chunk.entity_class_groups
     public static SectionedEntityCache<Entity> getEntityCacheOrNull(World world) {
         if (world instanceof ClientWorldAccessor) {
-            // noinspection unchecked
-            return ((ClientEntityManagerAccessor<Entity>) ((ClientWorldAccessor) world).getEntityManager()).getCache();
+            @SuppressWarnings("unchecked")
+            SectionedEntityCache<Entity> cache = ((ClientEntityManagerAccessor<Entity>) ((ClientWorldAccessor) world)
+                    .getEntityManager()).getCache();
+            return cache;
         } else if (world instanceof ServerWorldAccessor) {
-            // noinspection unchecked
-            return ((ServerEntityManagerAccessor<Entity>) ((ServerWorldAccessor) world).getEntityManager()).getCache();
+            @SuppressWarnings("unchecked")
+            SectionedEntityCache<Entity> cache = ((ServerEntityManagerAccessor<Entity>) ((ServerWorldAccessor) world)
+                    .getEntityManager()).getCache();
+            return cache;
         }
         return null;
     }
@@ -79,8 +83,10 @@ public class WorldHelper {
             EntityClassGroup.NoDragonClassGroup entityClassGroup, Box box) {
         ArrayList<Entity> entities = new ArrayList<>();
         cache.forEachInBox(box, section -> {
+            @SuppressWarnings("unchecked")
             // noinspection unchecked
             TypeFilterableList<Entity> allEntities = ((EntityTrackingSectionAccessor<Entity>) section).getCollection();
+            @SuppressWarnings("unchecked")
             // noinspection unchecked
             Collection<Entity> entitiesOfType = ((ClassGroupFilterableList<Entity>) allEntities)
                     .getAllOfGroupType(entityClassGroup);

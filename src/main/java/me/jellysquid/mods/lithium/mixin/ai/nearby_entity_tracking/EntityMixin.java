@@ -8,8 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
 /**
- * Extends the base living entity class to provide a {@link NearbyEntityListenerMulti} which will handle the
- * child {@link NearbyEntityListenerProvider}s of AI tasks attached to this entity.
+ * Extends the base living entity class to provide a
+ * {@link NearbyEntityListenerMulti} which will handle the
+ * child {@link NearbyEntityListenerProvider}s of AI tasks attached to this
+ * entity.
  */
 @Mixin(Entity.class)
 public class EntityMixin implements NearbyEntityListenerProvider {
@@ -22,10 +24,11 @@ public class EntityMixin implements NearbyEntityListenerProvider {
     }
 
     @Override
-    public void addListener(NearbyEntityTracker listener) {
+    public void addListener(NearbyEntityTracker<?> listener) {
         if (this.tracker == null) {
             this.tracker = new NearbyEntityListenerMulti();
         }
-        this.tracker.addListener(listener);
+        // noinspection unchecked
+        this.tracker.addListener((NearbyEntityTracker<net.minecraft.entity.LivingEntity>) listener);
     }
 }

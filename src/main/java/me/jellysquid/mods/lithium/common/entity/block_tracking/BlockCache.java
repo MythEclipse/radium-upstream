@@ -4,15 +4,16 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import me.jellysquid.mods.lithium.common.block.BlockStateFlags;
 import net.minecraft.entity.Entity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.registry.tag.TagKey;
+
 import net.minecraft.util.math.Box;
 import net.minecraftforge.fluids.FluidType;
 
 public final class BlockCache {
-    // To avoid slowing down setblock operations, only start caching after 3 Seconds = 60 gameticks with N accesses per tick
+    // To avoid slowing down setblock operations, only start caching after 3 Seconds
+    // = 60 gameticks with N accesses per tick
     private static final int MIN_DELAY = 60 * 5;
-    private int initDelay; //Changing MIN_DELAY should not affect correctness, just performance in some cases
+    private int initDelay; // Changing MIN_DELAY should not affect correctness, just performance in some
+                           // cases
 
     private Box trackedPos;
     private SectionedBlockChangeTracker tracker;
@@ -21,14 +22,16 @@ public final class BlockCache {
     private boolean canSkipSupportingBlockSearch;
 
     private boolean canSkipBlockTouching;
-    //0 if not touching fire/lava. 1 if touching fire/lava. -1 if not cached
+    // 0 if not touching fire/lava. 1 if touching fire/lava. -1 if not cached
     private byte cachedTouchingFireLava;
-    //0 if not suffocating. 1 if touching suffocating. -1 if not cached
+    // 0 if not suffocating. 1 if touching suffocating. -1 if not cached
     private byte cachedIsSuffocating;
-    //Touched fluid's height IF fluid pushing is 0. Touched fluid height is 0 when not touching that fluid. Not in collection: No cached value (uninitialized OR fluid pushing is not 0)
+    // Touched fluid's height IF fluid pushing is 0. Touched fluid height is 0 when
+    // not touching that fluid. Not in collection: No cached value (uninitialized OR
+    // fluid pushing is not 0)
     private final Object2DoubleArrayMap<FluidType> fluidType2FluidHeightMap;
 
-    //Future: maybe cache last failed movement vector
+    // Future: maybe cache last failed movement vector
 
     public BlockCache() {
         this.tracker = null;
@@ -45,10 +48,12 @@ public final class BlockCache {
         if (this.isTracking()) {
             throw new IllegalStateException("Cannot init cache that is already initialized!");
         }
-        this.tracker = SectionedBlockChangeTracker.registerAt(entity.getWorld(), entity.getBoundingBox(), BlockStateFlags.ANY);
+        this.tracker = SectionedBlockChangeTracker.registerAt(entity.getWorld(), entity.getBoundingBox(),
+                BlockStateFlags.ANY);
         this.initDelay = 0;
         this.resetCachedInfo();
     }
+
     public void updateCache(Entity entity) {
         if (this.isTracking() || this.initDelay >= MIN_DELAY) {
             Box boundingBox = entity.getBoundingBox();
@@ -111,7 +116,7 @@ public final class BlockCache {
     }
 
     public Object2DoubleMap<FluidType> getCachedFluidHeightMap() {
-        if(this.isTracking()) {
+        if (this.isTracking()) {
             return this.fluidType2FluidHeightMap;
         } else {
             return null;

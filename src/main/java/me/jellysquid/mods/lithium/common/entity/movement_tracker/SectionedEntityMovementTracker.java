@@ -37,7 +37,8 @@ public abstract class SectionedEntityMovementTracker<E extends EntityLike, S> {
 
     @Override
     public int hashCode() {
-        return HashCommon.mix(this.trackedWorldSections.hashCode()) ^ HashCommon.mix(this.trackedClass) ^ this.getClass().hashCode();
+        return HashCommon.mix(this.trackedWorldSections.hashCode()) ^ HashCommon.mix(this.trackedClass)
+                ^ this.getClass().hashCode();
     }
 
     @Override
@@ -48,7 +49,8 @@ public abstract class SectionedEntityMovementTracker<E extends EntityLike, S> {
     }
 
     /**
-     * Method to quickly check whether any relevant entities moved inside the relevant entity sections after
+     * Method to quickly check whether any relevant entities moved inside the
+     * relevant entity sections after
      * the last interaction attempt.
      *
      * @param lastCheckedTime time of the last interaction attempt
@@ -80,8 +82,9 @@ public abstract class SectionedEntityMovementTracker<E extends EntityLike, S> {
         assert world == this.trackedWorldSections.world();
 
         if (this.timesRegistered == 0) {
-            //noinspection unchecked
-            SectionedEntityCache<E> cache = ((ServerEntityManagerAccessor<E>) ((ServerWorldAccessor) world).getEntityManager()).getCache();
+            @SuppressWarnings("unchecked")
+            SectionedEntityCache<E> cache = ((ServerEntityManagerAccessor<E>) ((ServerWorldAccessor) world)
+                    .getEntityManager()).getCache();
 
             WorldSectionBox trackedSections = this.trackedWorldSections;
             int size = trackedSections.numSections();
@@ -89,8 +92,8 @@ public abstract class SectionedEntityMovementTracker<E extends EntityLike, S> {
             this.sortedSections = new ArrayList<>(size);
             this.sectionVisible = new boolean[size];
 
-            //vanilla iteration order in SectionedEntityCache is xzy
-            //WorldSectionBox upper coordinates are exclusive
+            // vanilla iteration order in SectionedEntityCache is xzy
+            // WorldSectionBox upper coordinates are exclusive
             for (int x = trackedSections.chunkX1(); x < trackedSections.chunkX2(); x++) {
                 for (int z = trackedSections.chunkZ1(); z < trackedSections.chunkZ2(); z++) {
                     for (int y = trackedSections.chunkY1(); y < trackedSections.chunkY2(); y++) {
@@ -113,8 +116,9 @@ public abstract class SectionedEntityMovementTracker<E extends EntityLike, S> {
             return;
         }
         assert this.timesRegistered == 0;
-        //noinspection unchecked
-        SectionedEntityCache<E> cache = ((ServerEntityManagerAccessor<E>) ((ServerWorldAccessor) world).getEntityManager()).getCache();
+        @SuppressWarnings("unchecked")
+        SectionedEntityCache<E> cache = ((ServerEntityManagerAccessor<E>) ((ServerWorldAccessor) world)
+                .getEntityManager()).getCache();
         MovementTrackerCache storage = (MovementTrackerCache) cache;
         storage.remove(this);
 
@@ -123,7 +127,8 @@ public abstract class SectionedEntityMovementTracker<E extends EntityLike, S> {
             EntityTrackingSection<E> section = sections.get(i);
             EntityMovementTrackerSection sectionAccess = (EntityMovementTrackerSection) section;
             sectionAccess.removeListener(cache, this);
-            if (!this.sectionsNotListeningTo.remove(section)) {
+            // noinspection unchecked
+            if (!this.sectionsNotListeningTo.remove((Object) section)) {
                 ((EntityMovementTrackerSection) section).removeListenToMovementOnce(this, this.trackedClass);
             }
         }
@@ -131,12 +136,13 @@ public abstract class SectionedEntityMovementTracker<E extends EntityLike, S> {
     }
 
     /**
-     * Register an entity section to this listener, so this listener can look for changes in the section.
+     * Register an entity section to this listener, so this listener can look for
+     * changes in the section.
      */
     public void onSectionEnteredRange(EntityMovementTrackerSection section) {
         this.setChanged(this.trackedWorldSections.world().getTime());
-        //noinspection SuspiciousMethodCalls
-        int sectionIndex = this.sortedSections.lastIndexOf(section);
+        // noinspection SuspiciousMethodCalls
+        int sectionIndex = this.sortedSections.lastIndexOf((Object) section);
         this.sectionVisible[sectionIndex] = true;
 
         this.sectionsNotListeningTo.add(section);
@@ -145,19 +151,21 @@ public abstract class SectionedEntityMovementTracker<E extends EntityLike, S> {
 
     public void onSectionLeftRange(EntityMovementTrackerSection section) {
         this.setChanged(this.trackedWorldSections.world().getTime());
-        //noinspection SuspiciousMethodCalls
-        int sectionIndex = this.sortedSections.lastIndexOf(section);
+        // noinspection SuspiciousMethodCalls
+        int sectionIndex = this.sortedSections.lastIndexOf((Object) section);
 
         this.sectionVisible[sectionIndex] = false;
 
-        if (!this.sectionsNotListeningTo.remove(section)) {
+        // noinspection unchecked
+        if (!this.sectionsNotListeningTo.remove((Object) section)) {
             section.removeListenToMovementOnce(this, this.trackedClass);
             this.notifyAllListeners();
         }
     }
 
     /**
-     * Method that marks that new entities might have appeared or moved in the tracked chunk sections.
+     * Method that marks that new entities might have appeared or moved in the
+     * tracked chunk sections.
      */
     private void setChanged(long atTime) {
         if (atTime > this.maxChangeTime) {

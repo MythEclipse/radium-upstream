@@ -19,7 +19,7 @@ public class SectionedEntityCacheMixin<T extends EntityLike> implements Movement
 
     @Override
     public <S extends SectionedEntityMovementTracker<?, ?>> S deduplicate(S tracker) {
-        //noinspection unchecked
+        @SuppressWarnings("unchecked")
         S storedTracker = (S) this.sectionEntityMovementTrackers.putIfAbsent(tracker, tracker);
         return storedTracker == null ? tracker : storedTracker;
     }

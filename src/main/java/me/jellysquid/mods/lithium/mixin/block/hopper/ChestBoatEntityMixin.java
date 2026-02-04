@@ -7,10 +7,7 @@ import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.entity.EntityChangeListener;
-import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ChestBoatEntity.class)
 public abstract class ChestBoatEntityMixin extends Entity {

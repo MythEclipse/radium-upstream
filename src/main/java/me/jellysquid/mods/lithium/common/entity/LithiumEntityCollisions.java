@@ -130,10 +130,12 @@ public class LithiumEntityCollisions {
                                 // get the world border at the end
                                 if (includeWorldBorder && !this.consumedWorldBorder) {
                                     this.consumedWorldBorder = true;
-                                    WorldBorder worldBorder = entity.getWorld().getWorldBorder();
-                                    if (!isWithinWorldBorder(worldBorder, box)
-                                            && isWithinWorldBorder(worldBorder, entity.getBoundingBox())) {
-                                        return worldBorder.asVoxelShape();
+                                    if (entity != null) {
+                                        WorldBorder worldBorder = entity.getWorld().getWorldBorder();
+                                        if (!isWithinWorldBorder(worldBorder, box)
+                                                && isWithinWorldBorder(worldBorder, entity.getBoundingBox())) {
+                                            return worldBorder.asVoxelShape();
+                                        }
                                     }
                                 }
                                 return this.endOfData();

@@ -13,7 +13,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Direction;
 
-public class LithiumDoubleInventory extends DoubleInventory implements LithiumInventory, InventoryChangeTracker, InventoryChangeEmitter, InventoryChangeListener, ComparatorTracker {
+public class LithiumDoubleInventory extends DoubleInventory
+        implements LithiumInventory, InventoryChangeTracker, InventoryChangeListener, ComparatorTracker {
 
     private final LithiumInventory first;
     private final LithiumInventory second;
@@ -24,24 +25,27 @@ public class LithiumDoubleInventory extends DoubleInventory implements LithiumIn
     ReferenceOpenHashSet<InventoryChangeListener> inventoryHandlingTypeListeners = null;
 
     /**
-     * This method returns the same LithiumDoubleInventory instance for equal (same children in same order)
-     * doubleInventory parameters until {@link #emitRemoved()} is called. After that a new LithiumDoubleInventory object
+     * This method returns the same LithiumDoubleInventory instance for equal (same
+     * children in same order)
+     * doubleInventory parameters until {@link #emitRemoved()} is called. After that
+     * a new LithiumDoubleInventory object
      * may be in use.
      *
      * @param doubleInventory A double inventory
-     * @return The only non-removed LithiumDoubleInventory instance for the double inventory. Null if not compatible
+     * @return The only non-removed LithiumDoubleInventory instance for the double
+     *         inventory. Null if not compatible
      */
     public static LithiumDoubleInventory getLithiumInventory(DoubleInventory doubleInventory) {
         Inventory vanillaFirst = ((DoubleInventoryAccessor) doubleInventory).getFirst();
         Inventory vanillaSecond = ((DoubleInventoryAccessor) doubleInventory).getSecond();
-        if (vanillaFirst != vanillaSecond && vanillaFirst instanceof LithiumInventory first && vanillaSecond instanceof LithiumInventory second) {
+        if (vanillaFirst != vanillaSecond && vanillaFirst instanceof LithiumInventory first
+                && vanillaSecond instanceof LithiumInventory second) {
             LithiumDoubleInventory newDoubleInventory = new LithiumDoubleInventory(first, second);
             LithiumDoubleStackList doubleStackList = LithiumDoubleStackList.getOrCreate(
                     newDoubleInventory,
                     InventoryHelper.getLithiumStackList(first),
                     InventoryHelper.getLithiumStackList(second),
-                    newDoubleInventory.getMaxCountPerStack()
-            );
+                    newDoubleInventory.getMaxCountPerStack());
             newDoubleInventory.doubleStackList = doubleStackList;
             return doubleStackList.doubleInventory;
         }
@@ -100,12 +104,14 @@ public class LithiumDoubleInventory extends DoubleInventory implements LithiumIn
     public void emitFirstComparatorAdded() {
         ReferenceOpenHashSet<InventoryChangeListener> inventoryChangeListeners = this.inventoryChangeListeners;
         if (inventoryChangeListeners != null && !inventoryChangeListeners.isEmpty()) {
-            inventoryChangeListeners.removeIf(inventoryChangeListener -> inventoryChangeListener.handleComparatorAdded(this));
+            inventoryChangeListeners
+                    .removeIf(inventoryChangeListener -> inventoryChangeListener.handleComparatorAdded(this));
         }
     }
 
     @Override
-    public void forwardContentChangeOnce(InventoryChangeListener inventoryChangeListener, LithiumStackList stackList, InventoryChangeTracker thisTracker) {
+    public void forwardContentChangeOnce(InventoryChangeListener inventoryChangeListener, LithiumStackList stackList,
+            InventoryChangeTracker thisTracker) {
         if (this.inventoryChangeListeners == null) {
             this.inventoryChangeListeners = new ReferenceOpenHashSet<>(1);
         }
@@ -164,11 +170,13 @@ public class LithiumDoubleInventory extends DoubleInventory implements LithiumIn
 
     @Override
     public void onComparatorAdded(Direction direction, int offset) {
-        throw new UnsupportedOperationException("Call onComparatorAdded(Direction direction, int offset) on the inventory half only!");
+        throw new UnsupportedOperationException(
+                "Call onComparatorAdded(Direction direction, int offset) on the inventory half only!");
     }
 
     @Override
     public boolean hasAnyComparatorNearby() {
-        return ((ComparatorTracker) this.first).hasAnyComparatorNearby() || ((ComparatorTracker) this.second).hasAnyComparatorNearby();
+        return ((ComparatorTracker) this.first).hasAnyComparatorNearby()
+                || ((ComparatorTracker) this.second).hasAnyComparatorNearby();
     }
 }

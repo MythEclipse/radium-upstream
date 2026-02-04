@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static net.caffeinemc.gradle.GradleMixinConfigPlugin.LOGGER;
 
-
 public abstract class CreateMixinConfigTask extends DefaultTask {
 
     @Option(option = "mixinParentPackage", description = "The parent of the mixin package. Mixins will be printed relative to the package.")
@@ -62,56 +61,72 @@ public abstract class CreateMixinConfigTask extends DefaultTask {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        ClassLoader loader = new URLClassLoader(new URL[]{url}, MixinConfigOption.class.getClassLoader());
-        HashSet<String> mixinPackages = new HashSet<>();
-        HashSet<String> mixinOptions = new HashSet<>();
-        List<MixinRuleRepresentation> sortedMixinConfigOptions = inputFiles.stream().filter(path -> path.toFile().isFile())
-                .map((Path inputFile) -> {
-                    boolean isPackageInfo = inputFile.endsWith("package-info.class");
-                    Path inputPackagePath = inputSourceSet.relativize(inputFile.getParent());
-                    String inputPackageName = inputPackagePath.toString().replaceAll(Pattern.quote(inputPackagePath.getFileSystem().getSeparator()), ".");
-                    String inputPackageClassName = inputPackageName + ".package-info";
-                    if (inputPackageName.startsWith(mixinParentPackage + "." + mixinPackage + ".")) {
-                        inputPackageName = inputPackageName.substring(mixinParentPackage.length() + 1);
-                    } else {
-                        return null;
-                    }
-                    if (!isPackageInfo) {
-                        mixinPackages.add(inputPackageName);
-                        return null;
-                    }
-                    try {
-                        Package inputPackage = loader.loadClass(inputPackageClassName).getPackage();
-                        MixinConfigOption[] inputPackageAnnotations = inputPackage.getAnnotationsByType(MixinConfigOption.class);
-                        if (inputPackageAnnotations.length > 1) {
-                            LOGGER.warn(inputPackagePath + " had multiple mixin config option annotations, only using first!");
+        try (URLClassLoader loader = new URLClassLoader(new URL[] { url }, MixinConfigOption.class.getClassLoader())) {
+            HashSet<String> mixinPackages = new HashSet<>();
+            HashSet<String> mixinOptions = new HashSet<>();
+            List<MixinRuleRepresentation> sortedMixinConfigOptions = inputFiles.stream()
+                    .filter(path -> path.toFile().isFile())
+                    .map((Path inputFile) -> {
+                        boolean isPackageInfo = inputFile.endsWith("package-info.class");
+                        Path inputPackagePath = inputSourceSet.relativize(inputFile.getParent());
+                        String inputPackageName = inputPackagePath.toString()
+                                .replaceAll(Pattern.quote(inputPackagePath.getFileSystem().getSeparator()), ".");
+                        String inputPackageClassName = inputPackageName + ".package-info";
+                        if (inputPackageName.startsWith(mixinParentPackage + "." + mixinPackage + ".")) {
+                            inputPackageName = inputPackageName.substring(mixinParentPackage.length() + 1);
+                        } else {
+                            return null;
                         }
-                        if (inputPackageAnnotations.length > 0) {
-                            MixinConfigOption option = inputPackageAnnotations[0];
-                            mixinOptions.add(inputPackageName);
-                            return new MixinRuleRepresentation(inputPackageName, option);
+                        if (!isPackageInfo) {
+                            mixinPackages.add(inputPackageName);
+                            return null;
                         }
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }).filter(Objects::nonNull)
-                .sorted(Comparator.comparing(MixinRuleRepresentation::path))
-                .collect(Collectors.toList());
+                        try {
+                            Package inputPackage = loader.loadClass(inputPackageClassName).getPackage();
+                            MixinConfigOption[] inputPackageAnnotations = inputPackage
+                                    .getAnnotationsByType(MixinConfigOption.class);
+                            if (inputPackageAnnotations.length > 1) {
+                                LOGGER.warn(inputPackagePath
+                                        + " had multiple mixin config option annotations, only using first!");
+                            }
+                            if (inputPackageAnnotations.length > 0) {
+                                MixinConfigOption option = inputPackageAnnotations[0];
+                                mixinOptions.add(inputPackageName);
+                                return new MixinRuleRepresentation(inputPackageName, option);
+                            }
+                        } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }).filter(Objects::nonNull)
+                    .sorted(Comparator.comparing(MixinRuleRepresentation::path))
+                    .collect(Collectors.toList());
 
-        mixinPackages.removeAll(mixinOptions);
-        StringBuilder errorMessage = new StringBuilder();
-        for (String packageName : mixinPackages) {
-            errorMessage.append("Mixin Package ").append(mixinPackage).append(".").append(packageName).append(" contains files without corresponding MixinConfigOption annotation in a package-info.java file!\n");
-        }
-        if (!errorMessage.isEmpty()) {
-            throw new IllegalStateException(String.valueOf(errorMessage));
-        }
+            mixinPackages.removeAll(mixinOptions);
+            StringBuilder errorMessage = new StringBuilder();
+            for (String packageName : mixinPackages) {
+                errorMessage.append("Mixin Package ").append(mixinPackage).append(".").append(packageName).append(
+                        " contains files without corresponding MixinConfigOption annotation in a package-info.java file!\n");
+            }
+            if (!errorMessage.isEmpty()) {
+                throw new IllegalStateException(String.valueOf(errorMessage));
+            }
 
-        try {
-            DefaultConfigCreator.writeDefaultConfig(this.modShortName, outputDirectory.resolve(this.modShortName.toLowerCase() + "-mixin-config-default.properties").toFile(), sortedMixinConfigOptions);
-            DefaultConfigCreator.writeMixinDependencies(this.modShortName, outputDirectory.resolve(this.modShortName.toLowerCase() + "-mixin-config-dependencies.properties").toFile(), sortedMixinConfigOptions);
-            DefaultConfigCreator.writeMixinConfigSummaryMarkdown(this.modShortName, Path.of(this.outputDirectoryForSummaryDocument).resolve(this.modShortName.toLowerCase() + "-mixin-config.md").toFile(), sortedMixinConfigOptions);
+            try {
+                DefaultConfigCreator.writeDefaultConfig(
+                        this.modShortName, outputDirectory
+                                .resolve(this.modShortName.toLowerCase() + "-mixin-config-default.properties").toFile(),
+                        sortedMixinConfigOptions);
+                DefaultConfigCreator.writeMixinDependencies(this.modShortName, outputDirectory
+                        .resolve(this.modShortName.toLowerCase() + "-mixin-config-dependencies.properties").toFile(),
+                        sortedMixinConfigOptions);
+                DefaultConfigCreator.writeMixinConfigSummaryMarkdown(this.modShortName,
+                        Path.of(this.outputDirectoryForSummaryDocument)
+                                .resolve(this.modShortName.toLowerCase() + "-mixin-config.md").toFile(),
+                        sortedMixinConfigOptions);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

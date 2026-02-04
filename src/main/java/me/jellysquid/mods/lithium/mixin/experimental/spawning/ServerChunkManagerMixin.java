@@ -11,15 +11,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ServerChunkManager.class)
 public class ServerChunkManagerMixin {
 
-    @Redirect(
-            method = "tickChunks",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/server/world/ServerWorld;iterateEntities()Ljava/lang/Iterable;"
-            )
-    )
+    @Redirect(method = "tickChunks", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;iterateEntities()Ljava/lang/Iterable;"))
     private Iterable<Entity> iterateEntitiesChunkAware(ServerWorld serverWorld) {
-        //noinspection unchecked
-        return ((ChunkAwareEntityIterable<Entity>)((ServerEntityManagerAccessor<Entity>) ((ServerWorldAccessor) serverWorld).getEntityManager()).getCache()).lithiumIterateEntitiesInTrackedSections();
+        @SuppressWarnings("unchecked")
+        ServerEntityManagerAccessor<Entity> entityManager = (ServerEntityManagerAccessor<Entity>) ((ServerWorldAccessor) serverWorld)
+                .getEntityManager();
+        @SuppressWarnings("unchecked")
+        ChunkAwareEntityIterable<Entity> cache = (ChunkAwareEntityIterable<Entity>) entityManager.getCache();
+        return cache.lithiumIterateEntitiesInTrackedSections();
     }
 }

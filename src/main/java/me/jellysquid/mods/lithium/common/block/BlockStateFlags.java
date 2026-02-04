@@ -11,7 +11,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.registry.tag.FluidTags;
+
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
@@ -25,20 +25,20 @@ public class BlockStateFlags {
     public static final ListeningBlockStatePredicate[] LISTENING_FLAGS;
     public static final int LISTENING_MASK_OR;
 
-    //Listening Flag
+    // Listening Flag
     public static final ListeningBlockStatePredicate ANY;
 
     public static final int NUM_TRACKED_FLAGS;
     public static final TrackedBlockStatePredicate[] TRACKED_FLAGS;
 
-    //Counting flags
+    // Counting flags
     public static final TrackedBlockStatePredicate OVERSIZED_SHAPE;
     public static final TrackedBlockStatePredicate PATH_NOT_OPEN;
     public static final TrackedBlockStatePredicate ANY_FLUID;
 
     public static final TrackedBlockStatePredicate[] FLAGS;
 
-    //Non counting flags
+    // Non counting flags
     public static final TrackedBlockStatePredicate ENTITY_TOUCHABLE;
 
     static {
@@ -50,8 +50,8 @@ public class BlockStateFlags {
                 return true;
             }
         };
-        //false -> we listen to changes of all blocks that pass the predicate test.
-        //true -> we only listen to changes of the predicate test result
+        // false -> we listen to changes of all blocks that pass the predicate test.
+        // true -> we only listen to changes of the predicate test result
         listeningFlags.put(ANY, false);
 
         NUM_LISTENING_FLAGS = listeningFlags.size();
@@ -63,7 +63,6 @@ public class BlockStateFlags {
         }
         LISTENING_MASK_OR = listenMaskOR;
         LISTENING_FLAGS = listeningFlags.keySet().toArray(new ListeningBlockStatePredicate[NUM_LISTENING_FLAGS]);
-
 
         ArrayList<TrackedBlockStatePredicate> countingFlags = new ArrayList<>(listeningFlags.keySet());
 
@@ -105,13 +104,18 @@ public class BlockStateFlags {
         ArrayList<TrackedBlockStatePredicate> flags = new ArrayList<>(countingFlags);
 
         ENTITY_TOUCHABLE = new TrackedBlockStatePredicate(countingFlags.size()) {
-            //How to find the remapped methods:
-            //1) Run in the debugger: System.out.println(FabricLoader.getInstance().getMappingResolver().getNamespaceData("intermediary").methodNames)
-            //2) Ctrl+F for the method name, in this case "onEntityCollision". Make sure to find the correct one.
-            private final String remapped_onEntityCollision = ObfuscationReflectionHelper.remapName(INameMappingService.Domain.METHOD, "m_7892_");
+            // How to find the remapped methods:
+            // 1) Run in the debugger:
+            // System.out.println(FabricLoader.getInstance().getMappingResolver().getNamespaceData("intermediary").methodNames)
+            // 2) Ctrl+F for the method name, in this case "onEntityCollision". Make sure to
+            // find the correct one.
+            private final String remapped_onEntityCollision = ObfuscationReflectionHelper
+                    .remapName(INameMappingService.Domain.METHOD, "m_7892_");
+
             @Override
             public boolean test(BlockState operand) {
-                return ReflectionUtil.hasMethodOverride(operand.getBlock().getClass(), AbstractBlock.class, true, this.remapped_onEntityCollision, BlockState.class, World.class, BlockPos.class, Entity.class);
+                return ReflectionUtil.hasMethodOverride(operand.getBlock().getClass(), AbstractBlock.class, true,
+                        this.remapped_onEntityCollision, BlockState.class, World.class, BlockPos.class, Entity.class);
             }
         };
         flags.add(ENTITY_TOUCHABLE);
