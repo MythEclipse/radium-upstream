@@ -21,7 +21,7 @@ public class TagCache {
     public static boolean isIn(BlockState state, TagKey<Block> tag) {
         Block block = state.getBlock();
         Map<TagKey<Block>, Boolean> blockMap = BLOCK_TAG_CACHE.computeIfAbsent(block, b -> new ConcurrentHashMap<>());
-        return blockMap.computeIfAbsent(tag, state::isIn);
+        return blockMap.computeIfAbsent(tag, t -> state.getRegistryEntry().isIn(t));
     }
 
     /**
