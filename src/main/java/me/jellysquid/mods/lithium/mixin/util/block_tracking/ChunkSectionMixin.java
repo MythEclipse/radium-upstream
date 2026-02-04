@@ -89,14 +89,14 @@ public abstract class ChunkSectionMixin implements BlockCountingSection, BlockLi
     @Inject(method = "setBlockState(IIILnet/minecraft/block/BlockState;Z)Lnet/minecraft/block/BlockState;", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;getFluidState()Lnet/minecraft/fluid/FluidState;", ordinal = 0, shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD)
     private void updateFlagCounters(int x, int y, int z, BlockState newState, boolean lock,
             CallbackInfoReturnable<BlockState> cir, BlockState oldState) {
-        short[] countsByFlag = this.countsByFlag;
-        if (countsByFlag == null) {
+        short[] flagCounts = this.countsByFlag;
+        if (flagCounts == null) {
             return;
         }
         int prevFlags = ((BlockStateFlagHolder) oldState).getAllFlags();
-        int flags = ((BlockStateFlagHolder) newState).getAllFlags();
+        int currFlags = ((BlockStateFlagHolder) newState).getAllFlags();
 
-        int flagsXOR = prevFlags ^ flags;
+        int flagsXOR = prevFlags ^ currFlags;
         // we need to iterate over indices that changed or are in the listeningMask
         // Some Listening Flags are sensitive to both the previous and the new block.
         // Others are only sensitive to
@@ -104,14 +104,14 @@ public abstract class ChunkSectionMixin implements BlockCountingSection, BlockLi
         // block counting needs to be updated
         // as well.
         int iterateFlags = (~BlockStateFlags.LISTENING_MASK_OR & flagsXOR) |
-                (BlockStateFlags.LISTENING_MASK_OR & this.listeningMask & (prevFlags | flags));
+                (BlockStateFlags.LISTENING_MASK_OR & this.listeningMask & (prevFlags | currFlags));
         int flagIndex;
 
-        while ((flagIndex = Integer.numberOfTrailingZeros(iterateFlags)) < 32 && flagIndex < countsByFlag.length) {
+        while ((flagIndex = Integer.numberOfTrailingZeros(iterateFlags)) < 32 && flagIndex < flagCounts.length) {
             int flagBit = 1 << flagIndex;
             // either count up by one (prevFlag not set) or down by one (prevFlag set)
             if ((flagsXOR & flagBit) != 0) {
-                countsByFlag[flagIndex] += 1 - (((prevFlags >>> flagIndex) & 1) << 1);
+                flagCounts[flagIndex] += 1 - (((prevFlags >>> flagIndex) & 1) << 1);
             }
             if ((this.listeningMask & flagBit) != 0) {
                 this.listeningMask = this.changeListener.onBlockChange(flagIndex, this);
@@ -137,6 +137,11 @@ public abstract class ChunkSectionMixin implements BlockCountingSection, BlockLi
     }
 
     public void invalidateSection() {
-        // TODO on section unload, unregister all kinds of stuff
+        // On section unload, unregister all trackers and reset listening state
+        if (this.changeListener != null) {
+            this.changeListener.onChunkSectionInvalidated();
+            this.changeListener = null;
+        }
+        this.listeningMask = 0;
     }
 }

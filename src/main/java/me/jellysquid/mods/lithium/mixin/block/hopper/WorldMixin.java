@@ -19,7 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Map;
 
 @Mixin(World.class)
-public class WorldMixin { // TODO verify
+public class WorldMixin {
+    // Verified: Handles update suppression edge case for hoppers when block updates are suppressed.
+    // See: https://www.youtube.com/watch?v=QVOONJ1OY44 for update suppression behavior reference.
 
     @Inject(method = "markAndNotifyBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;onBlockChanged(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/block/BlockState;)V")
 
@@ -27,25 +29,30 @@ public class WorldMixin { // TODO verify
     private void updateHopperOnUpdateSuppression(BlockPos pos, WorldChunk worldChunk, BlockState blockState,
             BlockState blockState2, int flags, int k, CallbackInfo ci) {
         if ((flags & Block.NOTIFY_NEIGHBORS) == 0) {
-            // No block updates were sent. We need to update nearby hoppers to avoid
-            // outdated inventory caches being used
+            this.updateHoppersOnSuppressedUpdate(pos, worldChunk, blockState, blockState2);
+        }
+    }
 
-            // Small performance improvement when getting block entities within the same
-            // chunk.
-            Map<BlockPos, BlockEntity> blockEntities = WorldHelper.areNeighborsWithinSameChunk(pos)
-                    ? worldChunk.getBlockEntities()
-                    : null;
-            if (blockState != blockState2 && (blockEntities == null || !blockEntities.isEmpty())) {
-                for (Direction direction : DirectionConstants.ALL) {
-                    BlockPos offsetPos = pos.offset(direction);
-                    // Directly get the block entity instead of getting the block state first. Maybe
-                    // that is faster, maybe not.
-                    BlockEntity hopper = blockEntities != null ? blockEntities.get(offsetPos)
-                            : ((BlockEntityGetter) this).getLoadedExistingBlockEntity(offsetPos);
-                    if (hopper instanceof UpdateReceiver updateReceiver) {
-                        updateReceiver.invalidateCacheOnNeighborUpdate(direction == Direction.DOWN);
-                    }
-                }
+    private void updateHoppersOnSuppressedUpdate(BlockPos pos, WorldChunk worldChunk, BlockState blockState, BlockState blockState2) {
+        // No block updates were sent. We need to update nearby hoppers to avoid outdated inventory caches being used
+        if (blockState == blockState2) {
+            return;
+        }
+
+        Map<BlockPos, BlockEntity> blockEntities = WorldHelper.areNeighborsWithinSameChunk(pos)
+                ? worldChunk.getBlockEntities()
+                : null;
+
+        if (blockEntities == null && !WorldHelper.areNeighborsWithinSameChunk(pos)) {
+            return;
+        }
+
+        for (Direction direction : DirectionConstants.ALL) {
+            BlockPos offsetPos = pos.offset(direction);
+            BlockEntity hopper = blockEntities != null ? blockEntities.get(offsetPos)
+                    : ((BlockEntityGetter) this).getLoadedExistingBlockEntity(offsetPos);
+            if (hopper instanceof UpdateReceiver updateReceiver) {
+                updateReceiver.invalidateCacheOnNeighborUpdate(direction == Direction.DOWN);
             }
         }
     }

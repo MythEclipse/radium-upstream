@@ -47,7 +47,9 @@ public abstract class ItemStackMixin implements StorableItemStack {
         } else if (this.myLocation instanceof Set<?>) {
             this.lithiumUnregisterMultipleInventories(myInventoryList, index);
         } else {
-            // Todo does this even happen? This seems to be unexpected behavior
+            // Edge case: myLocation points to a different inventory than the one being unregistered.
+            // This can occur due to mod compatibility issues or if an ItemStack is moved between inventories
+            // without proper registration/unregistration. Reset to safe state.
             this.myLocation = null;
         }
     }

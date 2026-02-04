@@ -88,7 +88,7 @@ public abstract class ServerChunkManagerMixin {
 
         // Store a local reference to the cached keys array in order to prevent bounds
         // checks later
-        long[] cacheKeys = this.cacheKeys;
+        long[] cachedKeys = this.cacheKeys;
 
         // Create a key which will identify this request in the cache
         long key = createCacheKey(x, z, status);
@@ -97,7 +97,7 @@ public abstract class ServerChunkManagerMixin {
             // Consolidate the scan into one comparison, allowing the JVM to better optimize
             // the function
             // This is considerably faster than scanning two arrays side-by-side
-            if (key == cacheKeys[i]) {
+            if (key == cachedKeys[i]) {
                 Chunk chunk = this.cacheChunks[i];
 
                 // If the chunk exists for the key or we didn't need to create one, return the
@@ -145,24 +145,56 @@ public abstract class ServerChunkManagerMixin {
         ChunkHolder holder = this.getChunkHolder(key);
 
         // Support Forge currentlyLoading field
-        if (holder != null && ((ChunkHolderExtended) holder).getCurrentlyLoading() != null)
-            return ((ChunkHolderExtended) holder).getCurrentlyLoading();
+        Chunk currentlyLoading = this.getCurrentlyLoadingChunk(holder);
+        if (currentlyLoading != null) {
+            return currentlyLoading;
+        }
 
         // Check if the holder is present and is at least of the level we need
+        holder = this.ensureChunkHolderExists(holder, x, z, level, create);
+        if (holder == null) {
+            return null;
+        }
+
+        this.updateChunkTicketIfNeeded(holder, x, z, level, create);
+
+        CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> statusFuture = 
+                ((ChunkHolderExtended) holder).getFutureByStatus(status.getIndex());
+
+        Chunk immediateChunk = this.tryGetImmediateChunk(statusFuture);
+        if (immediateChunk != null) {
+            return immediateChunk;
+        }
+
+        CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> loadFuture = 
+                this.getOrCreateLoadFuture(holder, status, statusFuture);
+        if (loadFuture == null) {
+            return null;
+        }
+
+        return this.waitForChunkLoad(loadFuture);
+    }
+
+    private Chunk getCurrentlyLoadingChunk(ChunkHolder holder) {
+        if (holder != null) {
+            return ((ChunkHolderExtended) holder).getCurrentlyLoading();
+        }
+        return null;
+    }
+
+    private ChunkHolder ensureChunkHolderExists(ChunkHolder holder, int x, int z, int level, boolean create) {
         if (this.isMissingForLevel(holder, level)) {
             if (create) {
-                // The chunk holder is missing, so we need to create a ticket in order to load
-                // it
+                // The chunk holder is missing, so we need to create a ticket in order to load it
                 this.createChunkLoadTicket(x, z, level);
 
                 // Tick the chunk manager to have our new ticket processed
                 this.tick();
 
                 // Try to fetch the holder again now that we have requested a load
-                holder = this.getChunkHolder(key);
+                holder = this.getChunkHolder(ChunkPos.toLong(x, z));
 
-                // If the holder is still not available, we need to fail now... something is
-                // wrong.
+                // If the holder is still not available, we need to fail now... something is wrong.
                 if (this.isMissingForLevel(holder, level)) {
                     throw Util.throwOrPause(new IllegalStateException("No chunk holder after ticket has been added"));
                 }
@@ -170,18 +202,20 @@ public abstract class ServerChunkManagerMixin {
                 // The holder is absent and we weren't asked to create anything, so return null
                 return null;
             }
-        } else if (create && holder != null && ((ChunkHolderExtended) holder).updateLastAccessTime(this.time)) {
+        }
+        return holder;
+    }
+
+    private void updateChunkTicketIfNeeded(ChunkHolder holder, int x, int z, int level, boolean create) {
+        if (create && holder != null && ((ChunkHolderExtended) holder).updateLastAccessTime(this.time)) {
             // Only create a new chunk ticket if one hasn't already been submitted this tick
-            // This maintains vanilla behavior (preventing chunks from being immediately
-            // unloaded) while also
+            // This maintains vanilla behavior (preventing chunks from being immediately unloaded) while also
             // eliminating the cost of submitting a ticket for most chunk fetches
             this.createChunkLoadTicket(x, z, level);
         }
+    }
 
-        CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> loadFuture = null;
-        CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> statusFuture = holder == null ? null
-                : ((ChunkHolderExtended) holder).getFutureByStatus(status.getIndex());
-
+    private Chunk tryGetImmediateChunk(CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> statusFuture) {
         if (statusFuture != null) {
             Either<Chunk, ChunkHolder.Unloaded> immediate = statusFuture.getNow(null);
 
@@ -193,7 +227,20 @@ public abstract class ServerChunkManagerMixin {
                     // Early-return with the already ready chunk
                     return chunk.get();
                 }
-            } else {
+            }
+        }
+        return null;
+    }
+
+    private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getOrCreateLoadFuture(
+            ChunkHolder holder, ChunkStatus status, 
+            CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> statusFuture) {
+        
+        CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> loadFuture = null;
+        
+        if (statusFuture != null) {
+            Either<Chunk, ChunkHolder.Unloaded> immediate = statusFuture.getNow(null);
+            if (immediate == null) {
                 // The load future will first start with the existing future for this status
                 loadFuture = statusFuture;
             }
@@ -204,7 +251,6 @@ public abstract class ServerChunkManagerMixin {
             if (holder == null) {
                 return null;
             }
-            @SuppressWarnings("null")
             boolean isEnoughLevel = ChunkLevels.getStatus(holder.getLevel()).isAtLeast(status);
             if (isEnoughLevel) {
                 // Create a new future which upgrades the chunk from the previous status level
@@ -225,7 +271,10 @@ public abstract class ServerChunkManagerMixin {
                 loadFuture = statusFuture;
             }
         }
+        return loadFuture;
+    }
 
+    private Chunk waitForChunkLoad(CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> loadFuture) {
         // Check if the future is completed first before trying to run other tasks in
         // our idle time
         // This prevents object allocations and method call overhead that would
@@ -266,7 +315,7 @@ public abstract class ServerChunkManagerMixin {
      * status.
      */
     private static long createCacheKey(int chunkX, int chunkZ, ChunkStatus status) {
-        return ((long) chunkX & 0xfffffffL) | (((long) chunkZ & 0xfffffffL) << 28) | ((long) status.getIndex() << 56);
+        return (chunkX & 0xfffffffL) | ((chunkZ & 0xfffffffL) << 28) | ((long) status.getIndex() << 56);
     }
 
     /**

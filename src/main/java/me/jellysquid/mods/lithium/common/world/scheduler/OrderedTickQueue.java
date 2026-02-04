@@ -20,7 +20,7 @@ public class OrderedTickQueue<T> extends AbstractQueue<OrderedTick<T>> {
 
     @SuppressWarnings("unchecked")
     public OrderedTickQueue(int capacity) {
-        this.arr = (OrderedTick<T>[]) new OrderedTick[capacity];
+        this.arr = new OrderedTick[capacity];
         this.lastIndexExclusive = 0;
         this.isSorted = true;
         this.unsortedPeekResult = null;
@@ -57,6 +57,9 @@ public class OrderedTickQueue<T> extends AbstractQueue<OrderedTick<T>> {
 
             @Override
             public OrderedTick<T> next() {
+                if (!this.hasNext()) {
+                    throw new java.util.NoSuchElementException();
+                }
                 return OrderedTickQueue.this.arr[this.nextIndex++];
             }
         };
@@ -90,15 +93,28 @@ public class OrderedTickQueue<T> extends AbstractQueue<OrderedTick<T>> {
 
     public boolean offer(OrderedTick<T> tick) {
         if (this.lastIndexExclusive >= this.arr.length) {
-            //todo remove consumed elements first
-            this.arr = copyArray(this.arr, HashCommon.nextPowerOfTwo(this.arr.length + 1));
+            // Remove consumed elements first to avoid unnecessary array expansion
+            if (this.firstIndex > 0) {
+                this.removeNullsAndConsumed();
+            }
+            // If still full after compaction, expand the array
+            if (this.lastIndexExclusive >= this.arr.length) {
+                this.arr = copyArray(this.arr, HashCommon.nextPowerOfTwo(this.arr.length + 1));
+            }
         }
         if (tick.subTickOrder() <= this.currentMaxSubTickOrder) {
             //Set to unsorted instead of slowing down the insertion
             //This is rare but may happen in bulk
             //Sorting later needs O(n*log(n)) time, but it only needs to happen when unordered insertion needs to happen
             //Therefore it is better than n times log(n) time of the PriorityQueue that happens on ordered insertion too
-            OrderedTick<T> firstTick = this.isSorted ? this.size() > 0 ? this.arr[this.firstIndex] : null : this.unsortedPeekResult;
+            OrderedTick<T> firstTick;
+            if (this.isSorted && this.size() > 0) {
+                firstTick = this.arr[this.firstIndex];
+            } else if (this.isSorted) {
+                firstTick = null;
+            } else {
+                firstTick = this.unsortedPeekResult;
+            }
             this.isSorted = false;
             this.unsortedPeekResult = firstTick == null || tick.subTickOrder() < firstTick.subTickOrder() ? tick : firstTick;
         } else {

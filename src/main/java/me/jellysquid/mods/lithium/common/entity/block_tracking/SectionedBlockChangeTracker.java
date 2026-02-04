@@ -183,6 +183,15 @@ public class SectionedBlockChangeTracker {
         this.isListeningToAll = false;
     }
 
+    /**
+     * Called when a section this tracker was listening to is invalidated/unloaded.
+     * Marks the tracker as no longer listening to all sections and updates the change time.
+     */
+    public void onSectionInvalidated() {
+        this.isListeningToAll = false;
+        this.setChanged(this.getWorldTime());
+    }
+
     public void setChanged(long atTime) {
         if (atTime > this.maxChangeTime) {
             this.maxChangeTime = atTime;

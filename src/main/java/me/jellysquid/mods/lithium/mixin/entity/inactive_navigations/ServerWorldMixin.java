@@ -63,6 +63,7 @@ public abstract class ServerWorldMixin extends World implements ServerWorldExten
 
     private ReferenceOpenHashSet<EntityNavigation> activeNavigations;
 
+    @SuppressWarnings("squid:S107") // Mixin constructor signature must match target
     protected ServerWorldMixin(MutableWorldProperties properties, RegistryKey<World> registryRef, DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates) {
         super(properties, registryRef, registryManager, dimensionEntry, profiler, isClient, debugWorld, biomeAccess, maxChainedNeighborUpdates);
     }
@@ -84,7 +85,7 @@ public abstract class ServerWorldMixin extends World implements ServerWorldExten
         return Collections.emptyIterator();
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "squid:S107"}) // Mixin init signature must match target
     @Inject(method = "<init>", at = @At("TAIL"))
     private void init(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld, long seed, List spawners, boolean shouldTickTime, RandomSequencesState randomSequencesState, CallbackInfo ci) {
         this.loadedMobs = new ReferenceOpenHashSet<>(this.loadedMobs);
@@ -122,7 +123,6 @@ public abstract class ServerWorldMixin extends World implements ServerWorldExten
      *
      * @return whether the activeEntityNavigation set is in the correct state
      */
-    @SuppressWarnings("unused")
     public boolean isConsistent() {
         int i = 0;
         for (MobEntity mobEntity : this.loadedMobs) {

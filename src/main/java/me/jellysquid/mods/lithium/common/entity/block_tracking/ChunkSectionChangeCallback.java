@@ -12,8 +12,8 @@ public final class ChunkSectionChangeCallback {
 
     public ChunkSectionChangeCallback() {
         @SuppressWarnings("unchecked")
-        ArrayList<SectionedBlockChangeTracker>[] trackers = (ArrayList<SectionedBlockChangeTracker>[]) new ArrayList[BlockStateFlags.NUM_LISTENING_FLAGS];
-        this.trackers = trackers;
+        ArrayList<SectionedBlockChangeTracker>[] trackersArray = new ArrayList[BlockStateFlags.NUM_LISTENING_FLAGS];
+        this.trackers = trackersArray;
         this.listeningMask = 0;
     }
 
@@ -51,5 +51,24 @@ public final class ChunkSectionChangeCallback {
             }
         }
         return this.listeningMask;
+    }
+
+    /**
+     * Called when the chunk section is unloaded/invalidated.
+     * Notifies all registered trackers that the section is no longer valid
+     * and clears all tracking state.
+     */
+    public void onChunkSectionInvalidated() {
+        for (int i = 0; i < this.trackers.length; i++) {
+            ArrayList<SectionedBlockChangeTracker> trackerList = this.trackers[i];
+            if (trackerList != null) {
+                for (SectionedBlockChangeTracker tracker : trackerList) {
+                    tracker.onSectionInvalidated();
+                }
+                trackerList.clear();
+                this.trackers[i] = null;
+            }
+        }
+        this.listeningMask = 0;
     }
 }

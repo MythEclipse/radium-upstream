@@ -122,8 +122,8 @@ public abstract class EntityTrackingSectionMixin<T extends EntityLike> implement
             } else {
                 this.onStartClimbingCachingEntity((Entity) entityLike);
                 if (this.pushableEntities.totalSize() > this.collection.size()) {
-                    //Todo: Decide on proper issue handling, printing a warning (?)
-                    //something is leaking somewhere, maybe due to mod compat issues!
+                    // Entity tracking data inconsistency detected - possible mod compatibility issue
+                    // Falling back to non-optimized path to ensure correctness
                     this.stopFilteringPushableEntities();
                 }
             }
@@ -136,7 +136,7 @@ public abstract class EntityTrackingSectionMixin<T extends EntityLike> implement
             if (!this.status.shouldTrack()) {
                 this.stopFilteringPushableEntities();
             } else {
-                this.pushableEntities.remove((Entity) entityLike);
+                this.pushableEntities.remove(entityLike);
             }
         }
     }

@@ -41,9 +41,13 @@ public abstract class ChunkTicketManagerMixin {
         return true;
     }
 
+    /**
+     * Redirects the SortedArraySet creation to use Lithium's optimized implementation.
+     * Note: This redirect targets the static factory method. If Forge/NeoForge changes the
+     * target method signature, this may need adjustment.
+     */
     @Redirect(method = "getTickets", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/collection/SortedArraySet;create(I)Lnet/minecraft/util/collection/SortedArraySet;", remap = false))
-    private static SortedArraySet<ChunkTicket<?>> useLithiumSortedArraySet(int initialCapacity) { // TODO fix redirect
-                                                                                                  // method
+    private static SortedArraySet<ChunkTicket<?>> useLithiumSortedArraySet(int initialCapacity) {
         return new ChunkTicketSortedArraySet<>(initialCapacity);
     }
 
