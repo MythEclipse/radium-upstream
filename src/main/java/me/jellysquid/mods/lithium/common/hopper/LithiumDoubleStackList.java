@@ -5,6 +5,7 @@ import me.jellysquid.mods.lithium.mixin.block.hopper.DoubleInventoryAccessor;
 import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -122,6 +123,7 @@ public class LithiumDoubleStackList extends LithiumStackList {
      * @param inventory       the blockentity / inventory that this stacklist is
      *                        inside
      */
+    @Override
     public void runComparatorUpdatePatternOnFailedExtract(LithiumStackList masterStackList, Inventory inventory) {
         if (inventory instanceof DoubleInventory) {
             this.first.runComparatorUpdatePatternOnFailedExtract(
@@ -142,13 +144,38 @@ public class LithiumDoubleStackList extends LithiumStackList {
         return this.first.size() + this.second.size();
     }
 
-    public void setInventoryModificationCallback(@Nonnull InventoryChangeTracker inventoryModificationCallback) {
+    @Override
+    public void setInventoryModificationCallback(@NotNull InventoryChangeTracker inventoryModificationCallback) {
         this.first.setInventoryModificationCallback(inventoryModificationCallback);
         this.second.setInventoryModificationCallback(inventoryModificationCallback);
     }
 
-    public void removeInventoryModificationCallback(@Nonnull InventoryChangeTracker inventoryModificationCallback) {
+    @Override
+    public void removeInventoryModificationCallback(@NotNull InventoryChangeTracker inventoryModificationCallback) {
         this.first.removeInventoryModificationCallback(inventoryModificationCallback);
         this.second.removeInventoryModificationCallback(inventoryModificationCallback);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        LithiumDoubleStackList that = (LithiumDoubleStackList) obj;
+        return this.first.equals(that.first) && this.second.equals(that.second);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + this.first.hashCode();
+        result = 31 * result + this.second.hashCode();
+        return result;
     }
 }

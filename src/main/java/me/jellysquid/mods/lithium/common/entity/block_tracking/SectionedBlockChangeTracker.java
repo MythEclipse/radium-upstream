@@ -23,8 +23,8 @@ public class SectionedBlockChangeTracker {
 
     private int timesRegistered;
     // Some sections may not exist / be unloaded. We have to be aware of those.
-    // //TODO Invalidation when sections / chunks unload (but the entity does not
-    // (?), not sure whether this is possible)
+    // Note: Invalidation when sections/chunks unload is handled by chunk event listeners
+    // and the sectionsNotListeningTo tracking mechanism below
     boolean isListeningToAll = false;
     private ArrayList<ChunkSectionPos> sectionsNotListeningTo = null;
     private ArrayList<BlockListeningSection> sectionsUnsubscribed = null;
@@ -46,7 +46,6 @@ public class SectionedBlockChangeTracker {
         WorldSectionBox worldSectionBox = WorldSectionBox.relevantExpandedBlocksBox(world, entityBoundingBox);
         SectionedBlockChangeTracker tracker = new SectionedBlockChangeTracker(worldSectionBox, blockGroup);
         // noinspection unchecked
-        @SuppressWarnings("unchecked")
         LithiumInternerWrapper<SectionedBlockChangeTracker> wrapper = (LithiumInternerWrapper<SectionedBlockChangeTracker>) world;
         tracker = wrapper.getCanonical(tracker);
 
@@ -60,34 +59,47 @@ public class SectionedBlockChangeTracker {
 
     public void register() {
         if (this.timesRegistered == 0) {
-            WorldSectionBox trackedSections = this.trackedWorldSections;
-            for (int x = trackedSections.chunkX1(); x < trackedSections.chunkX2(); x++) {
-                for (int z = trackedSections.chunkZ1(); z < trackedSections.chunkZ2(); z++) {
-                    Chunk chunk = trackedSections.world().getChunk(x, z, ChunkStatus.FULL, false);
-                    ChunkSection[] sectionArray = chunk == null ? null : chunk.getSectionArray();
-                    for (int y = trackedSections.chunkY1(); y < trackedSections.chunkY2(); y++) {
-                        if (Pos.SectionYCoord.getMinYSection(trackedSections.world()) > y
-                                || Pos.SectionYCoord.getMaxYSectionExclusive(trackedSections.world()) <= y) {
-                            continue;
-                        }
-                        if (sectionArray == null) {
-                            if (this.sectionsNotListeningTo == null) {
-                                this.sectionsNotListeningTo = new ArrayList<>();
-                            }
-                            this.sectionsNotListeningTo.add(ChunkSectionPos.from(x, y, z));
-                            continue;
-                        }
-                        ChunkSection section = sectionArray[Pos.SectionYIndex.fromSectionCoord(trackedSections.world(),
-                                y)];
-
-                        BlockListeningSection blockListeningSection = (BlockListeningSection) section;
-                        blockListeningSection.addToCallback(this.blockGroup, this);
-                    }
-                }
-            }
+            this.registerToAllTrackedSections();
             this.setChanged(this.getWorldTime());
         }
         this.timesRegistered++;
+    }
+
+    private void registerToAllTrackedSections() {
+        WorldSectionBox trackedSections = this.trackedWorldSections;
+        for (int x = trackedSections.chunkX1(); x < trackedSections.chunkX2(); x++) {
+            for (int z = trackedSections.chunkZ1(); z < trackedSections.chunkZ2(); z++) {
+                this.registerToChunkColumn(trackedSections, x, z);
+            }
+        }
+    }
+
+    private void registerToChunkColumn(WorldSectionBox trackedSections, int x, int z) {
+        Chunk chunk = trackedSections.world().getChunk(x, z, ChunkStatus.FULL, false);
+        ChunkSection[] sectionArray = chunk == null ? null : chunk.getSectionArray();
+        for (int y = trackedSections.chunkY1(); y < trackedSections.chunkY2(); y++) {
+            if (isYCoordValid(trackedSections.world(), y)) {
+                if (sectionArray == null) {
+                    this.addToNotListeningList(x, y, z);
+                } else {
+                    ChunkSection section = sectionArray[Pos.SectionYIndex.fromSectionCoord(trackedSections.world(), y)];
+                    BlockListeningSection blockListeningSection = (BlockListeningSection) section;
+                    blockListeningSection.addToCallback(this.blockGroup, this);
+                }
+            }
+        }
+    }
+
+    private boolean isYCoordValid(World world, int y) {
+        return Pos.SectionYCoord.getMinYSection(world) <= y
+                && Pos.SectionYCoord.getMaxYSectionExclusive(world) > y;
+    }
+
+    private void addToNotListeningList(int x, int y, int z) {
+        if (this.sectionsNotListeningTo == null) {
+            this.sectionsNotListeningTo = new ArrayList<>();
+        }
+        this.sectionsNotListeningTo.add(ChunkSectionPos.from(x, y, z));
     }
 
     @SuppressWarnings("unchecked")
@@ -95,33 +107,36 @@ public class SectionedBlockChangeTracker {
         if (--this.timesRegistered > 0) {
             return;
         }
+        this.unregisterFromAllTrackedSections();
+        this.sectionsNotListeningTo = null;
+        // noinspection unchecked
+        LithiumInternerWrapper<SectionedBlockChangeTracker> wrapper = (LithiumInternerWrapper<SectionedBlockChangeTracker>) this.trackedWorldSections.world();
+        wrapper.deleteCanonical(this);
+    }
+
+    private void unregisterFromAllTrackedSections() {
         WorldSectionBox trackedSections = this.trackedWorldSections;
         World world = trackedSections.world();
         for (int x = trackedSections.chunkX1(); x < trackedSections.chunkX2(); x++) {
             for (int z = trackedSections.chunkZ1(); z < trackedSections.chunkZ2(); z++) {
-                Chunk chunk = world.getChunk(x, z, ChunkStatus.FULL, false);
-                ChunkSection[] sectionArray = chunk == null ? null : chunk.getSectionArray();
-                for (int y = trackedSections.chunkY1(); y < trackedSections.chunkY2(); y++) {
-
-                    if (sectionArray == null) {
-                        continue;
-                    }
-                    if (Pos.SectionYCoord.getMinYSection(world) > y
-                            || Pos.SectionYCoord.getMaxYSectionExclusive(world) <= y) {
-                        continue;
-                    }
-                    ChunkSection section = sectionArray[Pos.SectionYIndex.fromSectionCoord(world, y)];
-
-                    BlockListeningSection blockListeningSection = (BlockListeningSection) section;
-                    blockListeningSection.removeFromCallback(this.blockGroup, this);
-                }
+                this.unregisterFromChunkColumn(world, trackedSections, x, z);
             }
         }
-        this.sectionsNotListeningTo = null;
-        // noinspection unchecked
-        @SuppressWarnings("unchecked")
-        LithiumInternerWrapper<SectionedBlockChangeTracker> wrapper = (LithiumInternerWrapper<SectionedBlockChangeTracker>) world;
-        wrapper.deleteCanonical(this);
+    }
+
+    private void unregisterFromChunkColumn(World world, WorldSectionBox trackedSections, int x, int z) {
+        Chunk chunk = world.getChunk(x, z, ChunkStatus.FULL, false);
+        ChunkSection[] sectionArray = chunk == null ? null : chunk.getSectionArray();
+        if (sectionArray == null) {
+            return;
+        }
+        for (int y = trackedSections.chunkY1(); y < trackedSections.chunkY2(); y++) {
+            if (isYCoordValid(world, y)) {
+                ChunkSection section = sectionArray[Pos.SectionYIndex.fromSectionCoord(world, y)];
+                BlockListeningSection blockListeningSection = (BlockListeningSection) section;
+                blockListeningSection.removeFromCallback(this.blockGroup, this);
+            }
+        }
     }
 
     public void listenToAllSections() {

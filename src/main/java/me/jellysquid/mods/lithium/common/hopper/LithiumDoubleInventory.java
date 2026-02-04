@@ -2,7 +2,6 @@ package me.jellysquid.mods.lithium.common.hopper;
 
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import me.jellysquid.mods.lithium.api.inventory.LithiumInventory;
-import me.jellysquid.mods.lithium.common.block.entity.inventory_change_tracking.InventoryChangeEmitter;
 import me.jellysquid.mods.lithium.common.block.entity.inventory_change_tracking.InventoryChangeListener;
 import me.jellysquid.mods.lithium.common.block.entity.inventory_change_tracking.InventoryChangeTracker;
 import me.jellysquid.mods.lithium.common.block.entity.inventory_comparator_tracking.ComparatorTracker;
@@ -60,12 +59,12 @@ public class LithiumDoubleInventory extends DoubleInventory
 
     @Override
     public void emitContentModified() {
-        ReferenceOpenHashSet<InventoryChangeListener> inventoryChangeListeners = this.inventoryChangeListeners;
-        if (inventoryChangeListeners != null) {
-            for (InventoryChangeListener inventoryChangeListener : inventoryChangeListeners) {
+        ReferenceOpenHashSet<InventoryChangeListener> listeners = this.inventoryChangeListeners;
+        if (listeners != null) {
+            for (InventoryChangeListener inventoryChangeListener : listeners) {
                 inventoryChangeListener.handleInventoryContentModified(this);
             }
-            inventoryChangeListeners.clear();
+            listeners.clear();
         }
     }
 
@@ -102,9 +101,9 @@ public class LithiumDoubleInventory extends DoubleInventory
 
     @Override
     public void emitFirstComparatorAdded() {
-        ReferenceOpenHashSet<InventoryChangeListener> inventoryChangeListeners = this.inventoryChangeListeners;
-        if (inventoryChangeListeners != null && !inventoryChangeListeners.isEmpty()) {
-            inventoryChangeListeners
+        ReferenceOpenHashSet<InventoryChangeListener> listeners = this.inventoryChangeListeners;
+        if (listeners != null && !listeners.isEmpty()) {
+            listeners
                     .removeIf(inventoryChangeListener -> inventoryChangeListener.handleComparatorAdded(this));
         }
     }

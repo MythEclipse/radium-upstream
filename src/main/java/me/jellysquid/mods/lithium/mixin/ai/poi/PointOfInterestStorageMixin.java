@@ -40,7 +40,8 @@ import java.util.stream.StreamSupport;
 public abstract class PointOfInterestStorageMixin extends SerializingRegionBasedStorage<PointOfInterestSet>
         implements PointOfInterestStorageExtended {
 
-    public PointOfInterestStorageMixin(Path path, Function<Runnable, Codec<PointOfInterestSet>> codecFactory,
+    @SuppressWarnings("java:S107") // Mixin constructor mirrors parent constructor
+    protected PointOfInterestStorageMixin(Path path, Function<Runnable, Codec<PointOfInterestSet>> codecFactory,
             Function<Runnable, PointOfInterestSet> factory, DataFixer dataFixer, DataFixTypes dataFixTypes,
             boolean dsync, DynamicRegistryManager dynamicRegistryManager, HeightLimitView world) {
         super(path, codecFactory, factory, dataFixer, dataFixTypes, dsync, dynamicRegistryManager, world);
@@ -95,7 +96,8 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
     private Stream<PointOfInterest> withinSphereChunkSectionSortedStream(
             Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos origin,
             int radius, PointOfInterestStorage.OccupationStatus status) {
-        double radiusSq = radius * radius;
+        double radiusSq = (double) radius * radius;
+        @SuppressWarnings("unchecked")
         RegionBasedStorageSectionExtended<PointOfInterestSet> storage = (RegionBasedStorageSectionExtended<PointOfInterestSet>) this;
         Stream<Stream<PointOfInterestSet>> stream = StreamSupport
                 .stream(new SphereChunkOrderedPoiSetSpliterator(radius, origin, storage), false);
@@ -107,11 +109,12 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
     private ArrayList<PointOfInterest> withinSphereChunkSectionSorted(
             Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos origin,
             int radius, PointOfInterestStorage.OccupationStatus status) {
-        double radiusSq = radius * radius;
+        double radiusSq = (double) radius * radius;
         int minChunkX = origin.getX() - radius - 1 >> 4;
         int minChunkZ = origin.getZ() - radius - 1 >> 4;
         int maxChunkX = origin.getX() + radius + 1 >> 4;
         int maxChunkZ = origin.getZ() + radius + 1 >> 4;
+        @SuppressWarnings("unchecked")
         RegionBasedStorageSectionExtended<PointOfInterestSet> storage = (RegionBasedStorageSectionExtended<PointOfInterestSet>) this;
         ArrayList<PointOfInterest> points = new ArrayList<>();
         Consumer<PointOfInterest> collector = point -> {
@@ -135,6 +138,7 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
             boolean preferNegativeY,
             Predicate<RegistryEntry<PointOfInterestType>> typePredicate,
             @Nullable Predicate<PointOfInterest> afterSortingPredicate) {
+        @SuppressWarnings("unchecked")
         RegionBasedStorageSectionExtended<PointOfInterestSet> storage = (RegionBasedStorageSectionExtended<PointOfInterestSet>) this;
         return StreamSupport.stream(new NearbyPointOfInterestStream(typePredicate, status, useSquareDistanceLimit,
                 preferNegativeY, afterSortingPredicate, origin, radius, storage), false);
