@@ -41,12 +41,15 @@ public class SectionedBlockChangeTracker {
     }
 
     @SuppressWarnings("unchecked")
+    private static LithiumInternerWrapper<SectionedBlockChangeTracker> getInternerWrapper(World world) {
+        return (LithiumInternerWrapper<SectionedBlockChangeTracker>) world;
+    }
+
     public static SectionedBlockChangeTracker registerAt(World world, Box entityBoundingBox,
             ListeningBlockStatePredicate blockGroup) {
         WorldSectionBox worldSectionBox = WorldSectionBox.relevantExpandedBlocksBox(world, entityBoundingBox);
         SectionedBlockChangeTracker tracker = new SectionedBlockChangeTracker(worldSectionBox, blockGroup);
-        // noinspection unchecked
-        LithiumInternerWrapper<SectionedBlockChangeTracker> wrapper = (LithiumInternerWrapper<SectionedBlockChangeTracker>) world;
+        LithiumInternerWrapper<SectionedBlockChangeTracker> wrapper = getInternerWrapper(world);
         tracker = wrapper.getCanonical(tracker);
 
         tracker.register();
@@ -102,15 +105,13 @@ public class SectionedBlockChangeTracker {
         this.sectionsNotListeningTo.add(ChunkSectionPos.from(x, y, z));
     }
 
-    @SuppressWarnings("unchecked")
     public void unregister() {
         if (--this.timesRegistered > 0) {
             return;
         }
         this.unregisterFromAllTrackedSections();
         this.sectionsNotListeningTo = null;
-        // noinspection unchecked
-        LithiumInternerWrapper<SectionedBlockChangeTracker> wrapper = (LithiumInternerWrapper<SectionedBlockChangeTracker>) this.trackedWorldSections.world();
+        LithiumInternerWrapper<SectionedBlockChangeTracker> wrapper = getInternerWrapper(this.trackedWorldSections.world());
         wrapper.deleteCanonical(this);
     }
 

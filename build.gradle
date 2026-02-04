@@ -37,7 +37,9 @@ loom {
 
 group = project.maven_group
 version = "${project.mod_version}${getVersionMetadata()}"
-archivesBaseName = "${project.name}-mc${project.minecraft_version}"
+base {
+    archivesName = "${project.name}-mc${project.minecraft_version}"
+}
 
 sourceSets {
     api {

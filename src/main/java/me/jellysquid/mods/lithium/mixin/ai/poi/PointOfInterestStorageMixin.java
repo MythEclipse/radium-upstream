@@ -40,7 +40,6 @@ import java.util.stream.StreamSupport;
 public abstract class PointOfInterestStorageMixin extends SerializingRegionBasedStorage<PointOfInterestSet>
         implements PointOfInterestStorageExtended {
 
-    @SuppressWarnings("java:S107") // Mixin constructor mirrors parent constructor
     protected PointOfInterestStorageMixin(Path path, Function<Runnable, Codec<PointOfInterestSet>> codecFactory,
             Function<Runnable, PointOfInterestSet> factory, DataFixer dataFixer, DataFixTypes dataFixTypes,
             boolean dsync, DynamicRegistryManager dynamicRegistryManager, HeightLimitView world) {

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public class WorldSafetyMixin {
     private static boolean loggedApplication = false;
 
-    @ModifyVariable(method = "getEntities", at = @At("HEAD"), ordinal = 1)
+    @ModifyVariable(method = "getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At("HEAD"), ordinal = 1)
     private Box modifyBoxGetEntities(Box box) {
         if (!loggedApplication) {
             System.out.println("[Radium/Safety] WorldSafetyMixin applied to getEntities");

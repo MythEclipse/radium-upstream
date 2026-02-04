@@ -19,14 +19,39 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(targets = "net/minecraft/server/world/ServerEntityManager$Listener")
-public class ServerEntityManagerListenerMixin<T extends EntityLike> {
+public abstract class ServerEntityManagerListenerMixin<T extends EntityLike> {
         @Shadow
         @Final
         private T entity;
 
-        @Final
-        @Shadow(remap = false)
-        ServerEntityManager<T> manager;
+        // @Final
+        // @Shadow(aliases = { "manager" }, remap = false)
+        // ServerEntityManager this$0;
+
+        private static java.lang.reflect.Field managerField;
+
+        @SuppressWarnings("unchecked")
+        private ServerEntityManager<T> getManager() {
+                try {
+                        if (managerField == null) {
+                                Class<?> clazz = this.getClass();
+                                // Handle runtime class obfuscation differences or dev vs prod
+                                // Try "manager" first (named), then "this$0" (synthetic inner), then
+                                // "field_xxxx" if known (we don't)
+                                try {
+                                        managerField = clazz.getDeclaredField("manager");
+                                } catch (NoSuchFieldException e) {
+                                        managerField = clazz.getDeclaredField("this$0");
+                                }
+                                managerField.setAccessible(true);
+                        }
+                        return (ServerEntityManager<T>) managerField.get(this);
+                } catch (Exception e) {
+                        throw new RuntimeException(
+                                        "Failed to access manager field in ServerEntityManager$Listener via reflection",
+                                        e);
+                }
+        }
 
         @Shadow
         private long sectionPos;
@@ -38,7 +63,7 @@ public class ServerEntityManagerListenerMixin<T extends EntityLike> {
                 if (listener != null) {
                         Range6Int chunkRange = listener.getChunkRange();
                         @SuppressWarnings("unchecked")
-                        ServerEntityManagerAccessor<T> accessor = (ServerEntityManagerAccessor<T>) this.manager;
+                        ServerEntityManagerAccessor<T> accessor = (ServerEntityManagerAccessor<T>) this.getManager();
                         listener.updateChunkRegistrations(
                                         accessor.getCache(),
                                         ChunkSectionPos.from(this.sectionPos), chunkRange,
@@ -51,7 +76,7 @@ public class ServerEntityManagerListenerMixin<T extends EntityLike> {
                 NearbyEntityListenerMulti listener = ((NearbyEntityListenerProvider) this.entity).getListener();
                 if (listener != null) {
                         @SuppressWarnings("unchecked")
-                        ServerEntityManagerAccessor<T> accessor = (ServerEntityManagerAccessor<T>) this.manager;
+                        ServerEntityManagerAccessor<T> accessor = (ServerEntityManagerAccessor<T>) this.getManager();
                         listener.removeFromAllChunksInRange(
                                         accessor.getCache(),
                                         ChunkSectionPos.from(this.sectionPos));

@@ -28,9 +28,6 @@ public class EntityMixin implements NearbyEntityListenerProvider {
         if (this.tracker == null) {
             this.tracker = new NearbyEntityListenerMulti();
         }
-        // noinspection unchecked
-        @SuppressWarnings("unchecked")
-        NearbyEntityTracker<net.minecraft.entity.LivingEntity> typedListener = (NearbyEntityTracker<net.minecraft.entity.LivingEntity>) listener;
-        this.tracker.addListener(typedListener);
+        this.tracker.addListener(listener);
     }
 }

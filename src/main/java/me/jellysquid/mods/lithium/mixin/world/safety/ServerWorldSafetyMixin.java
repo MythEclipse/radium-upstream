@@ -24,13 +24,4 @@ public class ServerWorldSafetyMixin {
         return box;
     }
 
-    @ModifyVariable(method = "getEntities", at = @At("HEAD"), ordinal = 1)
-    private Box modifyBoxGetEntities(Box box) {
-        if (!me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions.isBoxFinite(box)) {
-            System.err.println(
-                    "[Radium/Safety] Intercepted infinite/NaN box in ServerWorld.getEntities! Replacing with empty box.");
-            return new Box(0, 0, 0, 0, 0, 0);
-        }
-        return box;
-    }
 }

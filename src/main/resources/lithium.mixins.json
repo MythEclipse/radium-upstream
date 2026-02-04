@@ -30,7 +30,7 @@
     "ai.poi.SerializingRegionBasedStorageMixin",
     "ai.poi.fast_portals.PointOfInterestStorageMixin",
     "ai.poi.fast_portals.PortalForcerMixin",
-    "ai.poi.tasks.HideInHomeTaskMixin",
+
     "ai.poi.tasks.RaiderEntityAttackHomeGoalMixin",
     "ai.raid.PickupBannerAsLeaderGoalMixin",
     "ai.raid.RaiderEntityMixin",
