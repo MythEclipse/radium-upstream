@@ -22,7 +22,7 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
         }
 
         // Force enable safety mixins for VS2 compatibility (keep these as a fallback)
-        config.getOption("mixin.world.safety").addModOverride(true, "radium");
+        config.getOption("mixin.world.safety").addModOverride(false, "radium");
 
         // Unconditionally disable conflicting mixins as per user request to ensure
         // compatibility
