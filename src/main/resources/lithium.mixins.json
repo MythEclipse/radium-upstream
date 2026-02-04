@@ -230,7 +230,17 @@
     "world.temperature_cache.BiomeMixin",
     "world.tick_scheduler.ChunkTickSchedulerMixin",
     "world.safety.WorldSafetyMixin",
-    "world.safety.ServerWorldSafetyMixin"
+    "world.safety.ServerWorldSafetyMixin",
+    "network.PacketByteBufMixin",
+    "ai.sensor.NearestPlayersSensorMixin",
+    "util.AbstractBlockStateMixin",
+    "recipe.RecipeManagerMixin",
+    "recipe.IngredientMixin",
+    "ai.MobEntityMixin",
+    "ai.LivingEntityAccessor",
+    "block.BeaconBlockEntityMixin",
+    "ai.VibrationMixin",
+    "world.FastNeighborUpdaterMixin"
   ],
   "client": ["chunk.entity_class_groups.ClientEntityManagerAccessor", "chunk.entity_class_groups.ClientWorldMixin"]
 }

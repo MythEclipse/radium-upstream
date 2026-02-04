@@ -41,3 +41,7 @@ accessible method net/minecraft/world/poi/PointOfInterestSet isValid ()Z
 accessible method net/minecraft/util/collection/SortedArraySet <init> (ILjava/util/Comparator;)V
 
 accessible field net/minecraft/server/world/ChunkTicket tickCreated J
+accessible field net/minecraft/entity/LivingEntity despawnCounter I
+accessible field net/minecraft/entity/mob/MobEntity persistent Z
+accessible field net/minecraft/entity/mob/MobEntity idleTime I
+accessible field net/minecraft/entity/mob/MobEntity persistenceRequired Z
