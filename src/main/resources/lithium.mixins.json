@@ -233,7 +233,6 @@
     "world.safety.ServerWorldSafetyMixin",
     "network.PacketByteBufMixin",
     "ai.sensor.NearestPlayersSensorMixin",
-    "util.AbstractBlockStateMixin",
     "recipe.RecipeManagerMixin",
     "recipe.IngredientMixin",
     "ai.MobEntityMixin",

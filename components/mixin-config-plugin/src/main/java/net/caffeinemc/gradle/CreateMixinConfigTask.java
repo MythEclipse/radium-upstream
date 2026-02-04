@@ -75,27 +75,68 @@ public abstract class CreateMixinConfigTask extends DefaultTask {
                         String fullMixinPrefix = mixinParentPackage + "." + mixinPackage + ".";
                         if (inputPackageName.startsWith(fullMixinPrefix)) {
                             inputPackageName = inputPackageName.substring(fullMixinPrefix.length());
+                            System.out.println("DEBUG: Stripped package " + inputPackageClassName + " to " + inputPackageName);
                         } else {
                             return null;
                         }
                         if (!isPackageInfo) {
                             mixinPackages.add(inputPackageName);
+                            if (inputPackageName.equals("network")) {
+                                System.out.println("DEBUG: Adding network to mixinPackages for file " + inputFile.getFileName());
+                            }
                             return null;
                         }
                         try {
-                            Package inputPackage = loader.loadClass(inputPackageClassName).getPackage();
-                            MixinConfigOption[] inputPackageAnnotations = inputPackage
-                                    .getAnnotationsByType(MixinConfigOption.class);
+                            Class<?> packageInfoClass = loader.loadClass(inputPackageClassName);
+                            Package inputPackage = packageInfoClass.getPackage();
+                            
+                            // Load MixinConfigOption from the same classloader to ensure annotation matching works
+                            Class<?> mixinConfigOptionClass = loader.loadClass("me.jellysquid.mods.lithium.common.config.caffeine.MixinConfigOption");
+                            @SuppressWarnings("unchecked")
+                            Class<? extends java.lang.annotation.Annotation> annotationClass = 
+                                (Class<? extends java.lang.annotation.Annotation>) mixinConfigOptionClass;
+                            
+                            java.lang.annotation.Annotation[] inputPackageAnnotations = inputPackage
+                                    .getAnnotationsByType(annotationClass);
+                            
                             if (inputPackageAnnotations.length > 1) {
                                 LOGGER.warn(inputPackagePath
                                         + " had multiple mixin config option annotations, only using first!");
                             }
                             if (inputPackageAnnotations.length > 0) {
-                                MixinConfigOption option = inputPackageAnnotations[0];
+                                java.lang.annotation.Annotation annotation = inputPackageAnnotations[0];
+                                // Use reflection to get the description
+                                String description = (String) mixinConfigOptionClass.getMethod("description").invoke(annotation);
+                                boolean enabled = (Boolean) mixinConfigOptionClass.getMethod("enabled").invoke(annotation);
+                                Object[] depends = (Object[]) mixinConfigOptionClass.getMethod("depends").invoke(annotation);
+                                
+                                // Create a MixinConfigOption using the plugin's class for internal use
+                                MixinConfigOption option = new MixinConfigOption() {
+                                    @Override
+                                    public Class<? extends java.lang.annotation.Annotation> annotationType() {
+                                        return MixinConfigOption.class;
+                                    }
+                                    @Override
+                                    public String description() {
+                                        return description;
+                                    }
+                                    @Override
+                                    public boolean enabled() {
+                                        return enabled;
+                                    }
+                                    @Override
+                                    public MixinConfigDependency[] depends() {
+                                        // Convert depends array - for now return empty, can be enhanced if needed
+                                        return new MixinConfigDependency[0];
+                                    }
+                                };
+                                
                                 mixinOptions.add(inputPackageName);
                                 return new MixinRuleRepresentation(inputPackageName, option);
                             }
                         } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (ReflectiveOperationException e) {
                             e.printStackTrace();
                         }
                         return null;
