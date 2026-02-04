@@ -72,8 +72,9 @@ public abstract class CreateMixinConfigTask extends DefaultTask {
                         String inputPackageName = inputPackagePath.toString()
                                 .replaceAll(Pattern.quote(inputPackagePath.getFileSystem().getSeparator()), ".");
                         String inputPackageClassName = inputPackageName + ".package-info";
-                        if (inputPackageName.startsWith(mixinParentPackage + "." + mixinPackage + ".")) {
-                            inputPackageName = inputPackageName.substring(mixinParentPackage.length() + 1);
+                        String fullMixinPrefix = mixinParentPackage + "." + mixinPackage + ".";
+                        if (inputPackageName.startsWith(fullMixinPrefix)) {
+                            inputPackageName = inputPackageName.substring(fullMixinPrefix.length());
                         } else {
                             return null;
                         }

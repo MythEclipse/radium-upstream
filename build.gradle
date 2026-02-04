@@ -165,10 +165,18 @@ dependencies {
     implementation("org.joml:joml-primitives:1.10.0") { transitive = false }
 }
 
-// createMixinConfig { ... } removed
-// jar.dependsOn createMixinConfig
-// processResources.dependsOn createMixinConfig
-// createMixinConfig.dependsOn compileJava
+createMixinConfig {
+    inputFiles = compileJava.destinationDirectory
+    includeFiles = file("src/main/java/me/jellysquid/mods/lithium/mixin")
+    outputDirectory = file("src/main/resources/assets/lithium/")
+    outputDirectoryForSummaryDocument = file(".")
+    mixinParentPackage = "me.jellysquid.mods.lithium"
+    modShortName = "Radium"
+}
+
+jar.dependsOn createMixinConfig
+processResources.dependsOn createMixinConfig
+createMixinConfig.dependsOn compileJava
 
 def getVersionMetadata() {
     // CI builds only
