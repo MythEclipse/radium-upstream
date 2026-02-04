@@ -28,11 +28,12 @@ import java.util.stream.Stream;
 
 @Mixin(ChunkTickScheduler.class)
 public class ChunkTickSchedulerMixin<T> {
-    private static volatile Reference2IntOpenHashMap<Object> TYPE_2_INDEX;
+    @SuppressWarnings("java:S3077")
+    private static volatile Reference2IntOpenHashMap<Object> type2Index;
 
     static {
-        TYPE_2_INDEX = new Reference2IntOpenHashMap<>();
-        TYPE_2_INDEX.defaultReturnValue(-1);
+        type2Index = new Reference2IntOpenHashMap<>();
+        type2Index.defaultReturnValue(-1);
     }
 
     private final Long2ReferenceAVLTreeMap<OrderedTickQueue<T>> tickQueuesByTimeAndPriority = new Long2ReferenceAVLTreeMap<>();
@@ -73,7 +74,7 @@ public class ChunkTickSchedulerMixin<T> {
         // 20 bits are in use for pos
         // 12 bits remaining for the type, so up to 4096 different tickable
         // blocks/fluids (not block states) -> can upgrade to long if needed
-        int typeIndex = TYPE_2_INDEX.getInt(type);
+        int typeIndex = type2Index.getInt(type);
         if (typeIndex == -1) {
             typeIndex = fixMissingType2Index(type);
         }
@@ -89,11 +90,12 @@ public class ChunkTickSchedulerMixin<T> {
     // all threads share the same mapping
     private static synchronized int fixMissingType2Index(Object type) {
         // check again, other thread might have replaced the collection
-        int typeIndex = TYPE_2_INDEX.getInt(type);
+        int typeIndex = type2Index.getInt(type);
         if (typeIndex == -1) {
-            Reference2IntOpenHashMap<Object> clonedType2Index = TYPE_2_INDEX.clone();
-            clonedType2Index.put(type, typeIndex = clonedType2Index.size());
-            TYPE_2_INDEX = clonedType2Index;
+            Reference2IntOpenHashMap<Object> clonedType2Index = type2Index.clone();
+            typeIndex = clonedType2Index.size();
+            clonedType2Index.put(type, typeIndex);
+            type2Index = clonedType2Index;
             if (typeIndex >= 4096) {
                 throw new IllegalStateException(
                         "Lithium Tick Scheduler assumes at most 4096 different block types that receive scheduled ticks exist! Add mixin.world.tick_scheduler=false to the lithium properties/config to disable the optimization!");
@@ -123,16 +125,20 @@ public class ChunkTickSchedulerMixin<T> {
     }
 
     private void updateNextTickQueue(boolean checkEmpty) {
+        if (this.tickQueuesByTimeAndPriority.isEmpty()) {
+            this.nextTickQueue = null;
+            return;
+        }
         if (checkEmpty && this.nextTickQueue != null && this.nextTickQueue.isEmpty()) {
             OrderedTickQueue<T> removed = this.tickQueuesByTimeAndPriority
                     .remove(this.tickQueuesByTimeAndPriority.firstLongKey());
             if (removed != this.nextTickQueue) {
                 throw new IllegalStateException("Next tick queue doesn't have the lowest key!");
             }
-        }
-        if (this.tickQueuesByTimeAndPriority.isEmpty()) {
-            this.nextTickQueue = null;
-            return;
+            if (this.tickQueuesByTimeAndPriority.isEmpty()) {
+                this.nextTickQueue = null;
+                return;
+            }
         }
         long firstKey = this.tickQueuesByTimeAndPriority.firstLongKey();
         this.nextTickQueue = this.tickQueuesByTimeAndPriority.get(firstKey);
@@ -170,12 +176,12 @@ public class ChunkTickSchedulerMixin<T> {
     }
 
     private void queueTick(OrderedTick<T> orderedTick) {
-        OrderedTickQueue<T> tickQueue = this.tickQueuesByTimeAndPriority.computeIfAbsent(
+        OrderedTickQueue<T> queueForTime = this.tickQueuesByTimeAndPriority.computeIfAbsent(
                 getBucketKey(orderedTick.triggerTick(), orderedTick.priority()), key -> new OrderedTickQueue<>());
-        if (tickQueue.isEmpty()) {
+        if (queueForTime.isEmpty()) {
             this.updateNextTickQueue(false);
         }
-        tickQueue.offer(orderedTick);
+        queueForTime.offer(orderedTick);
 
         if (this.tickConsumer != null) {
             @SuppressWarnings("unchecked")
@@ -201,21 +207,21 @@ public class ChunkTickSchedulerMixin<T> {
     public void removeTicksIf(Predicate<OrderedTick<T>> predicate) {
         for (ObjectIterator<OrderedTickQueue<T>> tickQueueIterator = this.tickQueuesByTimeAndPriority.values()
                 .iterator(); tickQueueIterator.hasNext();) {
-            OrderedTickQueue<T> nextTickQueue = tickQueueIterator.next();
-            nextTickQueue.sort();
+            OrderedTickQueue<T> queueAtTime = tickQueueIterator.next();
+            queueAtTime.sort();
             boolean removed = false;
-            for (int i = 0; i < nextTickQueue.size(); i++) {
-                OrderedTick<T> nextTick = nextTickQueue.getTickAtIndex(i);
+            for (int i = 0; i < queueAtTime.size(); i++) {
+                OrderedTick<T> nextTick = queueAtTime.getTickAtIndex(i);
                 if (predicate.test(nextTick)) {
-                    nextTickQueue.setTickAtIndex(i, null);
+                    queueAtTime.setTickAtIndex(i, null);
                     this.allTicks.remove(tickToInt(nextTick.pos(), nextTick.type()));
                     removed = true;
                 }
             }
             if (removed) {
-                nextTickQueue.removeNullsAndConsumed();
+                queueAtTime.removeNullsAndConsumed();
             }
-            if (nextTickQueue.isEmpty()) {
+            if (queueAtTime.isEmpty()) {
                 tickQueueIterator.remove();
             }
         }
@@ -252,8 +258,8 @@ public class ChunkTickSchedulerMixin<T> {
                 nbtList.add(tick.toNbt(function));
             }
         }
-        for (OrderedTickQueue<T> nextTickQueue : this.tickQueuesByTimeAndPriority.values()) {
-            for (OrderedTick<T> orderedTick : nextTickQueue) {
+        for (OrderedTickQueue<T> queueAtTime : this.tickQueuesByTimeAndPriority.values()) {
+            for (OrderedTick<T> orderedTick : queueAtTime) {
                 nbtList.add(Tick.orderedTickToNbt(orderedTick, function, l));
             }
         }

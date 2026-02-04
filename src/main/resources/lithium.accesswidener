@@ -18,6 +18,7 @@ accessible method net/minecraft/world/chunk/PalettedContainer$DataProvider <init
 accessible method net/minecraft/world/chunk/PalettedContainer$PaletteProvider getBits (Lnet/minecraft/util/collection/IndexedIterable;I)I
 accessible method net/minecraft/world/chunk/PalettedContainer$PaletteProvider <init> (I)V
 accessible method net/minecraft/fluid/Fluid isEmpty ()Z
+accessible method net/minecraft/server/MinecraftServer runOneTask ()Z
 accessible method net/minecraft/server/world/ChunkHolder combineSavingFuture (Ljava/util/concurrent/CompletableFuture;Ljava/lang/String;)V
 accessible method net/minecraft/server/world/ChunkTicket isExpired (J)Z
 accessible method net/minecraft/util/shape/FractionalDoubleList <init> (I)V
@@ -41,7 +42,7 @@ accessible method net/minecraft/world/poi/PointOfInterestSet isValid ()Z
 accessible method net/minecraft/util/collection/SortedArraySet <init> (ILjava/util/Comparator;)V
 
 accessible field net/minecraft/server/world/ChunkTicket tickCreated J
-accessible field net/minecraft/entity/LivingEntity despawnCounter I
-accessible field net/minecraft/entity/mob/MobEntity persistent Z
-accessible field net/minecraft/entity/mob/MobEntity idleTime I
-accessible field net/minecraft/entity/mob/MobEntity persistenceRequired Z
+# accessible field net/minecraft/entity/LivingEntity despawnCounter I
+# accessible field net/minecraft/entity/mob/MobEntity persistent Z
+# accessible field net/minecraft/entity/mob/MobEntity idleTime I
+# accessible field net/minecraft/entity/mob/MobEntity persistenceRequired Z
