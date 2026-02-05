@@ -2,6 +2,7 @@
 package me.jellysquid.mods.lithium.common.world.interests.iterator;
 
 import it.unimi.dsi.fastutil.longs.LongArrayList;
+import me.jellysquid.mods.lithium.common.util.LithiumThreadPool;
 import me.jellysquid.mods.lithium.common.util.Distances;
 import me.jellysquid.mods.lithium.common.util.tuples.SortedPointOfInterest;
 import me.jellysquid.mods.lithium.common.world.interests.PointOfInterestSetExtended;
@@ -18,8 +19,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -138,14 +141,38 @@ public class NearbyPointOfInterestStream extends Spliterators.AbstractSpliterato
 
         LongArrayList chunkPositions = new LongArrayList();
 
-        // Note: Pre-calculating capacity could avoid reallocations but would require computing
-        // which chunks pass the distance filter twice. For typical POI searches (small radius),
-        // the current approach with dynamic growth is acceptable. A streaming/iterator approach
-        // would reduce memory but add complexity for the sorting requirement.
-        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
-            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                if (distanceLimitL2Sq >= Distances.getMinChunkToBlockDistanceL2Sq(origin, chunkX, chunkZ)) {
-                    chunkPositions.add(ChunkPos.toLong(chunkX, chunkZ));
+        boolean parallel = Boolean.parseBoolean(System.getProperty("lithium.parallel_poi", "true"));
+        int chunkXCount = maxChunkX - minChunkX + 1;
+        int chunkZCount = maxChunkZ - minChunkZ + 1;
+        int totalChunks = chunkXCount * chunkZCount;
+        if (parallel && totalChunks >= 256) {
+            List<CompletableFuture<LongArrayList>> futures = new ArrayList<>(chunkXCount);
+            for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+                final int cx = chunkX;
+                futures.add(CompletableFuture.supplyAsync(() -> {
+                    LongArrayList local = new LongArrayList();
+                    for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                        if (distanceLimitL2Sq >= Distances.getMinChunkToBlockDistanceL2Sq(origin, cx, chunkZ)) {
+                            local.add(ChunkPos.toLong(cx, chunkZ));
+                        }
+                    }
+                    return local;
+                }, LithiumThreadPool.getMiscPool()));
+            }
+
+            for (CompletableFuture<LongArrayList> future : futures) {
+                chunkPositions.addAll(future.join());
+            }
+        } else {
+            // Note: Pre-calculating capacity could avoid reallocations but would require computing
+            // which chunks pass the distance filter twice. For typical POI searches (small radius),
+            // the current approach with dynamic growth is acceptable. A streaming/iterator approach
+            // would reduce memory but add complexity for the sorting requirement.
+            for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+                for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                    if (distanceLimitL2Sq >= Distances.getMinChunkToBlockDistanceL2Sq(origin, chunkX, chunkZ)) {
+                        chunkPositions.add(ChunkPos.toLong(chunkX, chunkZ));
+                    }
                 }
             }
         }

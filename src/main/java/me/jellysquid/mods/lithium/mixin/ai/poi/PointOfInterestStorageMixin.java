@@ -98,6 +98,10 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
     private Stream<PointOfInterest> withinSphereChunkSectionSortedStream(
             Predicate<RegistryEntry<PointOfInterestType>> predicate, BlockPos origin,
             int radius, PointOfInterestStorage.OccupationStatus status) {
+        boolean parallel = Boolean.parseBoolean(System.getProperty("lithium.parallel_poi", "true"));
+        if (parallel) {
+            return this.withinSphereChunkSectionSorted(predicate, origin, radius, status).stream();
+        }
         double radiusSq = (double) radius * radius;
         @SuppressWarnings("unchecked")
         RegionBasedStorageSectionExtended<PointOfInterestSet> storage = (RegionBasedStorageSectionExtended<PointOfInterestSet>) this;
