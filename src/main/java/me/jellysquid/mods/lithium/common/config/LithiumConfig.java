@@ -21,6 +21,18 @@ public class LithiumConfig extends AbstractCaffeineConfigMixinPlugin {
             config.getOption("mixin.alloc.blockstate").addModOverride(false, "ferritecore");
         }
 
+        if (LoadingModList.get().getModFileById("c2me") != null) {
+            // Avoid overlapping chunk/worldgen/threading optimizations with C2ME
+            config.getOption("mixin.chunk.no_locking").addModOverride(false, "c2me");
+            config.getOption("mixin.chunk.serialization").addModOverride(false, "c2me");
+            config.getOption("mixin.util.chunk_access").addModOverride(false, "c2me");
+            config.getOption("mixin.world.chunk_access").addModOverride(false, "c2me");
+            config.getOption("mixin.world.player_chunk_tick").addModOverride(false, "c2me");
+            config.getOption("mixin.world.tick_scheduler").addModOverride(false, "c2me");
+            config.getOption("mixin.gen.chunk_region").addModOverride(false, "c2me");
+            config.getOption("mixin.world.chunk_tickets").addModOverride(false, "c2me");
+        }
+
         // Force enable safety mixins for VS2 compatibility (keep these as a fallback)
         config.getOption("mixin.world.safety").addModOverride(false, "radium");
 
