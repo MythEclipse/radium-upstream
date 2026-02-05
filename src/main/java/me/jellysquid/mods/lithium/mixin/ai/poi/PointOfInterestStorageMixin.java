@@ -43,6 +43,11 @@ import java.util.stream.StreamSupport;
 public abstract class PointOfInterestStorageMixin extends SerializingRegionBasedStorage<PointOfInterestSet>
         implements PointOfInterestStorageExtended {
 
+    @Unique
+    private static final ThreadLocal<ArrayList<PointOfInterestSet>> LITHIUM_POI_SET_CACHE = ThreadLocal.withInitial(ArrayList::new);
+    @Unique
+    private static final ThreadLocal<ArrayList<CompletableFuture<List<PointOfInterest>>>> LITHIUM_POI_FUTURE_CACHE = ThreadLocal.withInitial(ArrayList::new);
+
     protected PointOfInterestStorageMixin(Path path, Function<Runnable, Codec<PointOfInterestSet>> codecFactory,
             Function<Runnable, PointOfInterestSet> factory, DataFixer dataFixer, DataFixTypes dataFixTypes,
             boolean dsync, DynamicRegistryManager dynamicRegistryManager, HeightLimitView world) {
@@ -125,7 +130,8 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
         ArrayList<PointOfInterest> points = new ArrayList<>();
 
         boolean parallel = Boolean.parseBoolean(System.getProperty("lithium.parallel_poi", "true"));
-        List<PointOfInterestSet> sets = new ArrayList<>();
+        List<PointOfInterestSet> sets = LITHIUM_POI_SET_CACHE.get();
+        sets.clear();
         for (int x = minChunkX; x <= maxChunkX; x++) {
             for (int z = minChunkZ; z <= maxChunkZ; z++) {
                 for (PointOfInterestSet set : storage.getInChunkColumn(x, z)) {
@@ -146,7 +152,8 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
             return points;
         }
 
-        List<CompletableFuture<List<PointOfInterest>>> futures = new ArrayList<>(sets.size());
+        List<CompletableFuture<List<PointOfInterest>>> futures = LITHIUM_POI_FUTURE_CACHE.get();
+        futures.clear();
         for (PointOfInterestSet set : sets) {
             futures.add(CompletableFuture.supplyAsync(() -> {
                 ArrayList<PointOfInterest> local = new ArrayList<>();

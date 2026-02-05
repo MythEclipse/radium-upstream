@@ -3,6 +3,8 @@ package me.jellysquid.mods.lithium.common.network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketByteBuf;
 
+import java.nio.ByteBuffer;
+
 /**
  * LinearPacketBuffer provides a more efficient way to write common Minecraft
  * data types
@@ -33,9 +35,10 @@ public class LinearPacketBuffer {
             throw new IllegalArgumentException(
                     "String too big (was " + string.length() + " characters, max " + maxLength + ")");
         } else {
-            byte[] bytes = string.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-            writeVarInt(buf, bytes.length);
-            buf.writeBytes(bytes);
+            ByteBuffer data = Utf8StringEncoder.encode(string);
+            int length = data.remaining();
+            writeVarInt(buf, length);
+            buf.writeBytes(data.array(), data.arrayOffset() + data.position(), length);
         }
     }
 }

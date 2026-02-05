@@ -228,6 +228,7 @@
     "world.temperature_cache.BiomeMixin",
     "world.tick_scheduler.ChunkTickSchedulerMixin",
     "world.tick.ServerTickRateLimiterMixin",
+    "world.tick.ServerTickProfilerMixin",
     "world.safety.WorldSafetyMixin",
     "world.safety.ServerWorldSafetyMixin",
     "network.PacketByteBufMixin",
