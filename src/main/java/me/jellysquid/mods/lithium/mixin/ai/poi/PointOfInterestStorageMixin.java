@@ -3,6 +3,7 @@ package me.jellysquid.mods.lithium.mixin.ai.poi;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Codec;
 import me.jellysquid.mods.lithium.common.util.Distances;
+import me.jellysquid.mods.lithium.common.util.LithiumThreadPool;
 import me.jellysquid.mods.lithium.common.world.interests.PointOfInterestSetExtended;
 import me.jellysquid.mods.lithium.common.world.interests.PointOfInterestStorageExtended;
 import me.jellysquid.mods.lithium.common.world.interests.RegionBasedStorageSectionExtended;
@@ -29,7 +30,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -116,17 +119,45 @@ public abstract class PointOfInterestStorageMixin extends SerializingRegionBased
         @SuppressWarnings("unchecked")
         RegionBasedStorageSectionExtended<PointOfInterestSet> storage = (RegionBasedStorageSectionExtended<PointOfInterestSet>) this;
         ArrayList<PointOfInterest> points = new ArrayList<>();
-        Consumer<PointOfInterest> collector = point -> {
-            if (Distances.isWithinCircleRadius(origin, radiusSq, point.getPos())) {
-                points.add(point);
-            }
-        };
+
+        boolean parallel = Boolean.parseBoolean(System.getProperty("lithium.parallel_poi", "true"));
+        List<PointOfInterestSet> sets = new ArrayList<>();
         for (int x = minChunkX; x <= maxChunkX; x++) {
             for (int z = minChunkZ; z <= maxChunkZ; z++) {
                 for (PointOfInterestSet set : storage.getInChunkColumn(x, z)) {
-                    ((PointOfInterestSetExtended) set).collectMatchingPoints(predicate, status, collector);
+                    sets.add(set);
                 }
             }
+        }
+
+        if (!parallel || sets.size() < 8) {
+            Consumer<PointOfInterest> collector = point -> {
+                if (Distances.isWithinCircleRadius(origin, radiusSq, point.getPos())) {
+                    points.add(point);
+                }
+            };
+            for (PointOfInterestSet set : sets) {
+                ((PointOfInterestSetExtended) set).collectMatchingPoints(predicate, status, collector);
+            }
+            return points;
+        }
+
+        List<CompletableFuture<List<PointOfInterest>>> futures = new ArrayList<>(sets.size());
+        for (PointOfInterestSet set : sets) {
+            futures.add(CompletableFuture.supplyAsync(() -> {
+                ArrayList<PointOfInterest> local = new ArrayList<>();
+                Consumer<PointOfInterest> collector = point -> {
+                    if (Distances.isWithinCircleRadius(origin, radiusSq, point.getPos())) {
+                        local.add(point);
+                    }
+                };
+                ((PointOfInterestSetExtended) set).collectMatchingPoints(predicate, status, collector);
+                return local;
+            }, LithiumThreadPool.getMiscPool()));
+        }
+
+        for (CompletableFuture<List<PointOfInterest>> future : futures) {
+            points.addAll(future.join());
         }
         return points;
     }
