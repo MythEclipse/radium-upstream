@@ -153,8 +153,8 @@ dependencies {
     
     modImplementation "maven.modrinth:kotlin-for-forge:4.11.0"
 
-    // C2MEF (local composite build via submodule)
-    modImplementation "com.ishland.c2me:c2meF:${project.c2mef_version}"
+    // C2MEF (local jar built from submodule)
+    modImplementation files("${project.projectDir}/submodules/c2meF/build/libs/c2meF-${project.c2mef_version}.jar")
 
     // MixinExtras (Required by VS2)
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.3"))
@@ -163,6 +163,19 @@ dependencies {
     // Inlined implementation in me.jellysquid.mods.lithium.common.config.caffeine
     implementation("org.joml:joml:1.10.8") { transitive = false }
     implementation("org.joml:joml-primitives:1.10.0") { transitive = false }
+}
+
+tasks.register('buildC2meF', GradleBuild) {
+    dir = file('submodules/c2meF')
+    tasks = ['build']
+}
+
+tasks.named('build') {
+    dependsOn 'buildC2meF'
+}
+
+tasks.matching { it.name == 'runClient' }.configureEach {
+    dependsOn 'buildC2meF'
 }
 
 //createMixinConfig {

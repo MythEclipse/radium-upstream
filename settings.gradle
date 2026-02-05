@@ -10,6 +10,5 @@ pluginManagement {
 
 includeBuild 'components/mixin-config-plugin'
 
-includeBuild 'submodules/c2meF'
 
 rootProject.name = "radium"
