@@ -153,8 +153,8 @@ dependencies {
     
     modImplementation "maven.modrinth:kotlin-for-forge:4.11.0"
 
-    // C2ME (Using direct Version ID from Modrinth)
-    modImplementation "maven.modrinth:c2me-fabric:s4WOiNtz"
+    // C2MEF (local composite build via submodule)
+    modImplementation "com.ishland.c2me:c2meF:${project.c2mef_version}"
 
     // MixinExtras (Required by VS2)
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.3"))
