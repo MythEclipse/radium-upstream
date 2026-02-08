@@ -170,8 +170,17 @@ tasks.register('buildC2meF', GradleBuild) {
     tasks = ['build']
 }
 
+tasks.register('copyC2meJars', Copy) {
+    dependsOn 'buildC2meF'
+    from("${project.projectDir}/submodules/c2meF/build/libs") {
+        include '*.jar'
+    }
+    into "${project.buildDir}/libs"
+}
+
 tasks.named('build') {
     dependsOn 'buildC2meF'
+    finalizedBy 'copyC2meJars'
 }
 
 tasks.matching { it.name == 'runClient' }.configureEach {
